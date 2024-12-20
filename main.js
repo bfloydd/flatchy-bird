@@ -39,6 +39,16 @@ class FlappyBird {
             height: 40
         };
         
+        // Update fire base properties for larger flames
+        this.fireBase = {
+            flames: Array(20).fill().map((_, i) => ({
+                x: i * 18,
+                y: this.canvas.height,
+                size: Math.random() * 8 + 40,  // Increased base size from 34 to 40
+                offset: Math.random() * Math.PI
+            }))
+        };
+        
         this.bindEvents();
         this.init();
     }
@@ -149,6 +159,18 @@ class FlappyBird {
             this.gameOver = true;
             this.bird.y = this.canvas.height - this.bird.size;
             cancelAnimationFrame(this.animationFrame);
+        }
+        
+        // Update flame positions
+        if (!this.gameOver && this.gameStarted) {
+            this.fireBase.flames.forEach(flame => {
+                flame.x -= 1; // Move flames left slowly
+                if (flame.x < -20) {
+                    flame.x = this.canvas.width + 20;
+                    flame.size = Math.random() * 10 + 25;
+                    flame.offset = Math.random() * Math.PI;
+                }
+            });
         }
     }
     
@@ -353,6 +375,32 @@ class FlappyBird {
                 this.startButton.y + this.startButton.height/2
             );
         }
+        
+        // Draw fire base (add this before the game over/start screen overlays)
+        this.drawFireBase();
+    }
+    
+    drawFireBase() {
+        // Only draw fire if game has started
+        if (!this.gameStarted) return;
+        
+        // Draw continuous flames
+        this.fireBase.flames.forEach((flame, i) => {
+            this.ctx.save();
+            this.ctx.translate(flame.x, this.canvas.height + 10); // Move flames slightly below bottom edge
+            
+            // Minimal animation to prevent gaps
+            const time = Date.now() / 1000;
+            const sizeOffset = Math.sin(time + flame.offset) * 2;
+            const yOffset = Math.cos(time + flame.offset) * 1;
+            
+            this.ctx.font = `${flame.size + sizeOffset}px Arial`;
+            this.ctx.textAlign = 'center';
+            this.ctx.textBaseline = 'bottom';
+            this.ctx.fillText('🔥', 0, yOffset);
+            
+            this.ctx.restore();
+        });
     }
     
     gameLoop() {
