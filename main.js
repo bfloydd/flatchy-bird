@@ -157,8 +157,12 @@ class FlappyBird {
         
         // Draw score
         this.ctx.fillStyle = '#fff';
-        this.ctx.font = '24px Arial';
-        this.ctx.fillText(`Score: ${this.score}`, 10, 30);
+        this.ctx.font = '32px Arial';
+        this.ctx.textAlign = 'center';
+        this.ctx.strokeStyle = '#000';
+        this.ctx.lineWidth = 4;
+        this.ctx.strokeText(`${this.score}`, this.canvas.width / 2, 50);
+        this.ctx.fillText(`${this.score}`, this.canvas.width / 2, 50);
         
         // Draw game over
         if (this.gameOver) {
