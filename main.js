@@ -11,7 +11,7 @@ class FlappyBird {
             velocity: 0,
             gravity: 0.25,
             jump: -5,
-            size: 16
+            size: 24
         };
         
         this.pipes = [];
@@ -102,7 +102,7 @@ class FlappyBird {
             velocity: 0,
             gravity: 0.25,
             jump: -5,
-            size: 16
+            size: 24
         };
         this.pipes = [];
         this.lastPipe = 0;
@@ -200,7 +200,7 @@ class FlappyBird {
         }
         
         this.ctx.rotate(rotation);
-        this.ctx.font = '20px Arial';
+        this.ctx.font = '30px Arial';
         this.ctx.fillStyle = '#fff';
         this.ctx.textAlign = 'center';
         this.ctx.textBaseline = 'middle';
