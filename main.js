@@ -101,6 +101,10 @@ class FlappyBird {
             colors: ['#FF0000', '#00FF00', '#0000FF', '#FF00FF', '#FFFF00']
         };
         
+        // Add level tracking
+        this.currentLevel = 1;
+        this.maxLevels = 2;  // For future levels
+        
         this.bindEvents();
         this.init();
     }
@@ -130,8 +134,14 @@ class FlappyBird {
                     clickX <= this.continueButton.x + this.continueButton.width &&
                     clickY >= this.continueButton.y && 
                     clickY <= this.continueButton.y + this.continueButton.height) {
-                    console.log('Continue to Level 2 clicked!');
-                    // Future implementation for Level 2
+                    if (this.currentLevel < this.maxLevels) {
+                        console.log(`Starting Level ${this.currentLevel + 1}`);
+                        // Future: Start next level
+                        this.startLevel(this.currentLevel + 1);
+                    } else {
+                        console.log('Starting over from Level 1');
+                        this.startLevel(1);
+                    }
                 }
             } else if (this.gameOver) {
                 if (clickX >= this.restartButton.x && 
@@ -183,6 +193,9 @@ class FlappyBird {
         this.bosses = []; // Clear all bosses
         
         this.levelComplete = false;
+        
+        // Reset level-specific properties
+        this.currentLevel = 1;
         
         this.gameLoop();
     }
@@ -692,5 +705,17 @@ class FlappyBird {
         if (!this.gameOver) {
             this.animationFrame = requestAnimationFrame(() => this.gameLoop());
         }
+    }
+    
+    // Add new method for level management
+    startLevel(levelNumber) {
+        this.currentLevel = levelNumber;
+        // Future: Add level-specific configurations here
+        // For example:
+        // - Different backgrounds
+        // - Different boss patterns
+        // - Different pipe speeds
+        // For now, just restart the game
+        this.restart();
     }
 } 
