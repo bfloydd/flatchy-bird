@@ -164,9 +164,21 @@ class FlappyBird {
 
         document.addEventListener('keydown', (e) => {
             if (e.code === 'Space') {
-                if (this.gameOver) {
+                if (this.levelComplete) {
+                    // Trigger continue button
+                    if (this.currentLevel < this.maxLevels) {
+                        console.log(`Starting Level ${this.currentLevel + 1}`);
+                        this.startLevel(this.currentLevel + 1);
+                    } else {
+                        console.log('Starting over from Level 1');
+                        this.startLevel(1);
+                    }
+                } else if (this.gameOver) {
                     this.restart();
                 } else if (!this.gameStarted) {
+                    // Only handle input if we're clicking where the start button would be
+                    const buttonCenterX = this.startButton.x + this.startButton.width/2;
+                    const buttonCenterY = this.startButton.y + this.startButton.height/2;
                     handleInput();
                 } else {
                     handleInput();
