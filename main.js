@@ -325,10 +325,11 @@ class FlappyBird {
             this.ctx.fillStyle = '#fff';
             this.ctx.font = '20px Arial';
             this.ctx.textAlign = 'center';
+            this.ctx.textBaseline = 'middle';
             this.ctx.fillText(
                 'Restart',
                 this.canvas.width / 2,
-                this.restartButton.y + 25
+                this.restartButton.y + this.restartButton.height/2
             );
         }
         
