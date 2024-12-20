@@ -49,20 +49,33 @@ class FlappyBird {
             }))
         };
         
-        // Update ghost to be a boss that emerges from flames
-        this.boss = {
-            hasAppeared: false,
-            active: false,
-            x: this.canvas.width,
-            y: this.canvas.height - 50,
-            size: 40,
-            velocity: -1.5,
-            projectiles: [],
-            shootCooldown: 0,
-            maxShots: 3,
-            emergingFromFire: true,
-            emergenceProgress: 0
+        // Define boss types and their properties
+        this.bossTypes = {
+            GHOST: {
+                emoji: '👻',
+                level: 2,
+                size: 40,
+                velocity: -1.5,
+                projectileEmoji: '☠️'
+            },
+            SKELETON: {
+                emoji: '💀',
+                level: 4,
+                size: 45,
+                velocity: -1.8,
+                projectileEmoji: '🦴'
+            },
+            ANGRY: {
+                emoji: '😠',
+                level: 6,
+                size: 50,
+                velocity: -2,
+                projectileEmoji: '💢'
+            }
         };
+        
+        // Track all active bosses
+        this.bosses = [];
         
         this.bindEvents();
         this.init();
@@ -135,19 +148,7 @@ class FlappyBird {
         this.gameStarted = false;
         this.gameOver = false;
         
-        this.boss = {
-            hasAppeared: false,
-            active: false,
-            x: this.canvas.width,
-            y: this.canvas.height - 50,
-            size: 40,
-            velocity: -1.5,
-            projectiles: [],
-            shootCooldown: 0,
-            maxShots: 3,
-            emergingFromFire: true,
-            emergenceProgress: 0
-        };
+        this.bosses = []; // Clear all bosses
         
         this.gameLoop();
     }
@@ -202,91 +203,99 @@ class FlappyBird {
             });
         }
         
-        // Update boss
-        if (this.score >= 2) {
-            if (!this.boss.active && !this.boss.hasAppeared) {
-                this.boss.active = true;
-                this.boss.hasAppeared = true;
-                this.boss.x = this.canvas.width - 50;
-                this.boss.y = this.canvas.height;
-                this.boss.emergingFromFire = true;
-                this.boss.emergenceProgress = 0;
-                this.boss.shootCooldown = 120;
-                this.boss.maxShots = 3;
+        // Update bosses
+        Object.values(this.bossTypes).forEach(bossType => {
+            if (this.score >= bossType.level) {
+                // Check if this boss type already exists
+                const existingBoss = this.bosses.find(b => b.type === bossType);
+                if (!existingBoss) {
+                    // Create new boss
+                    this.bosses.push({
+                        type: bossType,
+                        active: true,
+                        x: this.canvas.width,
+                        y: this.canvas.height,
+                        size: bossType.size,
+                        velocity: bossType.velocity,
+                        projectiles: [],
+                        shootCooldown: 120,
+                        maxShots: 3,
+                        emergingFromFire: true,
+                        emergenceProgress: 0
+                    });
+                }
             }
-            
-            if (this.boss.active) {
-                // Handle boss emergence
-                if (this.boss.emergingFromFire) {
-                    this.boss.emergenceProgress += 0.02;
-                    this.boss.y = this.canvas.height - (80 * this.boss.emergenceProgress);
+        });
+        
+        // Update all active bosses
+        this.bosses.forEach(boss => {
+            if (boss.emergingFromFire) {
+                boss.emergenceProgress += 0.02;
+                boss.y = this.canvas.height - (80 * boss.emergenceProgress);
+                
+                if (boss.emergenceProgress >= 1) {
+                    boss.emergingFromFire = false;
+                    boss.y = this.canvas.height - 80;
+                }
+            } else {
+                // Move boss
+                boss.x += boss.velocity;
+                
+                // Boss shooting logic
+                if (boss.shootCooldown <= 0 && boss.maxShots > 0) {
+                    // Calculate direction and miss vector (same as before)
+                    const dirX = this.bird.x - boss.x;
+                    const dirY = this.bird.y - boss.y;
                     
-                    if (this.boss.emergenceProgress >= 1) {
-                        this.boss.emergingFromFire = false;
-                        this.boss.y = this.canvas.height - 80;
-                    }
-                } else {
-                    // Move boss
-                    this.boss.x += this.boss.velocity;
+                    const perpX = -dirY;
+                    const perpY = dirX;
                     
-                    // Boss shooting logic
-                    if (this.boss.shootCooldown <= 0 && this.boss.maxShots > 0) {
-                        // Calculate direction to player
-                        const dirX = this.bird.x - this.boss.x;
-                        const dirY = this.bird.y - this.boss.y;
-                        
-                        // Calculate perpendicular vector for consistent miss
-                        const perpX = -dirY;
-                        const perpY = dirX;
-                        
-                        // Normalize and scale the perpendicular vector
-                        const length = Math.sqrt(perpX * perpX + perpY * perpY);
-                        const missDistance = 100; // Distance to miss by
-                        const missX = (perpX / length) * missDistance;
-                        const missY = (perpY / length) * missDistance;
-                        
-                        this.boss.projectiles.push({
-                            x: this.boss.x,
-                            y: this.boss.y,
-                            size: 15,
-                            velocity: {
-                                x: (this.bird.x + missX - this.boss.x) / 100,
-                                y: (this.bird.y + missY - this.boss.y) / 100
-                            }
-                        });
-                        this.boss.maxShots--;
-                        this.boss.shootCooldown = 90;
-                    }
+                    const length = Math.sqrt(perpX * perpX + perpY * perpY);
+                    const missDistance = 100;
+                    const missX = (perpX / length) * missDistance;
+                    const missY = (perpY / length) * missDistance;
                     
-                    if (this.boss.shootCooldown > 0) {
-                        this.boss.shootCooldown--;
-                    }
+                    boss.projectiles.push({
+                        x: boss.x,
+                        y: boss.y,
+                        size: 15,
+                        velocity: {
+                            x: (this.bird.x + missX - boss.x) / 100,
+                            y: (this.bird.y + missY - boss.y) / 100
+                        }
+                    });
+                    boss.maxShots--;
+                    boss.shootCooldown = 90;
                 }
                 
-                // Update projectiles and collision
-                this.boss.projectiles.forEach((projectile) => {
-                    projectile.x += projectile.velocity.x;
-                    projectile.y += projectile.velocity.y;
-                    
-                    const distance = Math.hypot(
-                        projectile.x - (this.bird.x + this.bird.size/2),
-                        projectile.y - (this.bird.y + this.bird.size/2)
-                    );
-                    
-                    if (distance < (this.bird.size/2 + projectile.size/2)) {
-                        this.gameOver = true;
-                    }
-                });
-                
-                // Remove off-screen projectiles
-                this.boss.projectiles = this.boss.projectiles.filter(projectile => 
-                    projectile.x > -projectile.size && 
-                    projectile.x < this.canvas.width + projectile.size &&
-                    projectile.y > -projectile.size && 
-                    projectile.y < this.canvas.height + projectile.size
-                );
+                if (boss.shootCooldown > 0) {
+                    boss.shootCooldown--;
+                }
             }
-        }
+            
+            // Update projectiles for this boss
+            boss.projectiles.forEach(projectile => {
+                projectile.x += projectile.velocity.x;
+                projectile.y += projectile.velocity.y;
+                
+                const distance = Math.hypot(
+                    projectile.x - (this.bird.x + this.bird.size/2),
+                    projectile.y - (this.bird.y + this.bird.size/2)
+                );
+                
+                if (distance < (this.bird.size/2 + projectile.size/2)) {
+                    this.gameOver = true;
+                }
+            });
+            
+            // Remove off-screen projectiles
+            boss.projectiles = boss.projectiles.filter(projectile => 
+                projectile.x > -projectile.size && 
+                projectile.x < this.canvas.width + projectile.size &&
+                projectile.y > -projectile.size && 
+                projectile.y < this.canvas.height + projectile.size
+            );
+        });
     }
     
     checkCollision(pipe) {
@@ -495,34 +504,34 @@ class FlappyBird {
         // Draw fire base (add this before the game over/start screen overlays)
         this.drawFireBase();
         
-        // Draw boss and projectiles if active
-        if (this.boss.active && this.gameStarted && !this.gameOver) {
-            // Draw boss with larger size
-            this.ctx.font = '40px Arial';  // Bigger size for boss
-            this.ctx.textAlign = 'center';
-            this.ctx.textBaseline = 'middle';
-            
-            // Add glow effect for emergence
-            if (this.boss.emergingFromFire) {
-                this.ctx.save();
-                this.ctx.shadowColor = '#ff4400';
-                this.ctx.shadowBlur = 20;
-                this.ctx.shadowOffsetX = 0;
-                this.ctx.shadowOffsetY = 0;
+        // Draw all bosses and their projectiles
+        this.bosses.forEach(boss => {
+            if (boss.active && this.gameStarted && !this.gameOver) {
+                this.ctx.font = `${boss.size}px Arial`;
+                this.ctx.textAlign = 'center';
+                this.ctx.textBaseline = 'middle';
+                
+                if (boss.emergingFromFire) {
+                    this.ctx.save();
+                    this.ctx.shadowColor = '#ff4400';
+                    this.ctx.shadowBlur = 20;
+                    this.ctx.shadowOffsetX = 0;
+                    this.ctx.shadowOffsetY = 0;
+                }
+                
+                this.ctx.fillText(boss.type.emoji, boss.x, boss.y);
+                
+                if (boss.emergingFromFire) {
+                    this.ctx.restore();
+                }
+                
+                // Draw projectiles
+                this.ctx.font = '15px Arial';
+                boss.projectiles.forEach(projectile => {
+                    this.ctx.fillText(boss.type.projectileEmoji, projectile.x, projectile.y);
+                });
             }
-            
-            this.ctx.fillText('👻', this.boss.x, this.boss.y);
-            
-            if (this.boss.emergingFromFire) {
-                this.ctx.restore();
-            }
-            
-            // Draw projectiles
-            this.ctx.font = '15px Arial';
-            this.boss.projectiles.forEach(projectile => {
-                this.ctx.fillText('☠️', projectile.x, projectile.y);
-            });
-        }
+        });
     }
     
     drawFireBase() {
