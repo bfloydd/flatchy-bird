@@ -199,6 +199,32 @@ class FlappyBird {
             rotation = 0.3;
         }
         
+        // Draw flames behind skull
+        this.ctx.save();
+        if (this.bird.velocity < 0) {
+            // Multiple flames trailing when moving up
+            this.ctx.translate(-this.bird.size/2, this.bird.size/4);
+            this.ctx.rotate(-0.3);
+            this.ctx.font = '25px Arial';
+            this.ctx.fillText('🔥', 0, 0);
+            this.ctx.font = '20px Arial';
+            this.ctx.fillText('🔥', -15, 0);
+            this.ctx.font = '18px Arial';
+            this.ctx.fillText('🔥', -25, 0);
+        } else {
+            // Multiple flames trailing when moving down
+            this.ctx.translate(-this.bird.size/2, -this.bird.size/4);
+            this.ctx.rotate(0.3);
+            this.ctx.font = '25px Arial';
+            this.ctx.fillText('🔥', 0, 0);
+            this.ctx.font = '20px Arial';
+            this.ctx.fillText('🔥', -15, 0);
+            this.ctx.font = '18px Arial';
+            this.ctx.fillText('🔥', -25, 0);
+        }
+        this.ctx.restore();
+        
+        // Draw skull with rotation
         this.ctx.rotate(rotation);
         this.ctx.font = '30px Arial';
         this.ctx.fillStyle = '#fff';
