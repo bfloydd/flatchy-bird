@@ -186,6 +186,14 @@ class FlappyBird {
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         
         this.ctx.fillStyle = '#2ecc71';
+        this.ctx.fillRect(
+            this.bird.x,
+            this.bird.y,
+            this.bird.size,
+            this.bird.size
+        );
+        
+        this.ctx.fillStyle = '#2ecc71';
         this.pipes.forEach(pipe => {
             this.ctx.fillRect(pipe.x, 0, this.pipeWidth, pipe.y);
             this.ctx.fillRect(
@@ -196,21 +204,15 @@ class FlappyBird {
             );
         });
         
-        this.ctx.fillStyle = '#f1c40f';
-        this.ctx.fillRect(
-            this.bird.x,
-            this.bird.y,
-            this.bird.size,
-            this.bird.size
-        );
-        
-        this.ctx.fillStyle = '#fff';
-        this.ctx.font = '32px Arial';
-        this.ctx.textAlign = 'center';
-        this.ctx.strokeStyle = '#000';
-        this.ctx.lineWidth = 4;
-        this.ctx.strokeText(`${this.score}`, this.canvas.width / 2, 50);
-        this.ctx.fillText(`${this.score}`, this.canvas.width / 2, 50);
+        if (this.gameStarted) {
+            this.ctx.fillStyle = '#fff';
+            this.ctx.font = '32px Arial';
+            this.ctx.textAlign = 'center';
+            this.ctx.strokeStyle = '#000';
+            this.ctx.lineWidth = 4;
+            this.ctx.strokeText(`${this.score}`, this.canvas.width / 2, 50);
+            this.ctx.fillText(`${this.score}`, this.canvas.width / 2, 50);
+        }
         
         if (this.gameOver) {
             this.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
