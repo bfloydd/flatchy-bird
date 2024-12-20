@@ -238,6 +238,10 @@ class FlappyBird {
         
         this.ctx.fillStyle = '#2ecc71';
         this.pipes.forEach(pipe => {
+            // Main log color - lighter brown
+            this.ctx.fillStyle = '#A67B5B'; // Changed from #8B4513 to a lighter brown
+            
+            // Draw main logs
             this.ctx.fillRect(pipe.x, 0, this.pipeWidth, pipe.y);
             this.ctx.fillRect(
                 pipe.x,
@@ -245,6 +249,22 @@ class FlappyBird {
                 this.pipeWidth,
                 this.canvas.height - (pipe.y + this.pipeGap)
             );
+            
+            // Add wood texture rings - lighter accent color
+            this.ctx.fillStyle = '#C19A6B'; // Changed from #A0522D to a lighter accent
+            for (let i = 0; i < pipe.y; i += 30) {
+                this.ctx.fillRect(pipe.x, i, this.pipeWidth, 5);
+            }
+            for (let i = pipe.y + this.pipeGap; i < this.canvas.height; i += 30) {
+                this.ctx.fillRect(pipe.x, i, this.pipeWidth, 5);
+            }
+            
+            // Add darker edges for depth - slightly lighter edge color
+            this.ctx.fillStyle = '#8B7355'; // Changed from #654321 to a lighter edge color
+            this.ctx.fillRect(pipe.x, 0, 5, pipe.y);
+            this.ctx.fillRect(pipe.x + this.pipeWidth - 5, 0, 5, pipe.y);
+            this.ctx.fillRect(pipe.x, pipe.y + this.pipeGap, 5, this.canvas.height - (pipe.y + this.pipeGap));
+            this.ctx.fillRect(pipe.x + this.pipeWidth - 5, pipe.y + this.pipeGap, 5, this.canvas.height - (pipe.y + this.pipeGap));
         });
         
         if (this.gameStarted && !this.gameOver) {
