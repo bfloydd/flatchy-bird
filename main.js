@@ -9,15 +9,15 @@ class FlappyBird {
             x: 50,
             y: 200,
             velocity: 0,
-            gravity: 0.25,
-            jump: -5,
+            gravity: 0.2,
+            jump: -4.5,
             size: 24
         };
         
         this.pipes = [];
-        this.pipeGap = 130;
+        this.pipeGap = 150;
         this.pipeWidth = 50;
-        this.pipeInterval = 1500;
+        this.pipeInterval = 2000;
         this.lastPipe = 0;
         
         this.score = 0;
@@ -55,22 +55,29 @@ class FlappyBird {
                 emoji: '👻',
                 level: 2,
                 size: 40,
-                velocity: -1.5,
+                velocity: -1.4,
                 projectileEmoji: '☠️'
             },
             SKELETON: {
                 emoji: '💀',
                 level: 4,
                 size: 45,
-                velocity: -1.8,
+                velocity: -1.6,
                 projectileEmoji: '🦴'
             },
             ANGRY: {
                 emoji: '😠',
                 level: 6,
-                size: 50,
-                velocity: -2,
+                size: 45,
+                velocity: -1.8,
                 projectileEmoji: '💢'
+            },
+            DEMON: {
+                emoji: '👿',  // Demon face emoji
+                level: 8,
+                size: 50,     // Slightly larger
+                velocity: -2.0, // Slightly faster
+                projectileEmoji: '🔥'  // Fire projectiles
             }
         };
         
@@ -138,8 +145,8 @@ class FlappyBird {
             x: 50,
             y: 200,
             velocity: 0,
-            gravity: 0.25,
-            jump: -5,
+            gravity: 0.2,
+            jump: -4.5,
             size: 24
         };
         this.pipes = [];
@@ -171,7 +178,7 @@ class FlappyBird {
         }
         
         this.pipes.forEach(pipe => {
-            pipe.x -= 2;
+            pipe.x -= 1.8;
             
             if (this.checkCollision(pipe)) {
                 this.gameOver = true;
@@ -194,7 +201,7 @@ class FlappyBird {
         // Update flame positions
         if (!this.gameOver && this.gameStarted) {
             this.fireBase.flames.forEach(flame => {
-                flame.x -= 1; // Move flames left slowly
+                flame.x -= 1.2;
                 if (flame.x < -20) {
                     flame.x = this.canvas.width + 20;
                     flame.size = Math.random() * 10 + 25;
@@ -251,7 +258,7 @@ class FlappyBird {
                     const perpY = dirX;
                     
                     const length = Math.sqrt(perpX * perpX + perpY * perpY);
-                    const missDistance = 100;
+                    const missDistance = 150;
                     const missX = (perpX / length) * missDistance;
                     const missY = (perpY / length) * missDistance;
                     
