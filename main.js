@@ -61,8 +61,8 @@ class FlappyBird {
             SKELETON: {
                 emoji: '💀',
                 level: 4,
-                size: 45,
-                velocity: -1.6,
+                size: 50,
+                velocity: -1.3,
                 projectileEmoji: '🦴'
             },
             ANGRY: {
@@ -73,11 +73,11 @@ class FlappyBird {
                 projectileEmoji: '💢'
             },
             DEMON: {
-                emoji: '👿',  // Demon face emoji
+                emoji: '👿',
                 level: 8,
-                size: 50,     // Slightly larger
-                velocity: -2.0, // Slightly faster
-                projectileEmoji: '🔥'  // Fire projectiles
+                size: 50,
+                velocity: -2.0,
+                projectileEmoji: '🔥'
             }
         };
         
@@ -454,27 +454,49 @@ class FlappyBird {
         
         // Draw wall torches
         this.background.torches.forEach(torch => {
-            // Draw torch holder
-            this.ctx.fillStyle = '#4a4a4a';
-            this.ctx.fillRect(torch.x - 5, torch.y, 10, 20);
-            
-            // Draw animated flame
-            const time = Date.now() / 1000;
-            const flameY = torch.y - 10 + Math.sin(time + torch.flameOffset) * 2;
-            
+            // Draw sconce
             this.ctx.save();
-            this.ctx.translate(torch.x, flameY);
             
-            // Add glow effect
-            this.ctx.shadowColor = '#ff4400';
-            this.ctx.shadowBlur = 20;
-            this.ctx.shadowOffsetX = 0;
-            this.ctx.shadowOffsetY = 0;
+            // Draw metal sconce base
+            this.ctx.fillStyle = '#4a4a4a';
+            this.ctx.beginPath();
+            this.ctx.moveTo(torch.x - 12, torch.y);
+            this.ctx.lineTo(torch.x + 12, torch.y);
+            this.ctx.lineTo(torch.x + 8, torch.y + 25);
+            this.ctx.lineTo(torch.x - 8, torch.y + 25);
+            this.ctx.closePath();
+            this.ctx.fill();
             
+            // Add metallic highlights
+            this.ctx.fillStyle = '#5a5a5a';
+            this.ctx.fillRect(torch.x - 10, torch.y + 2, 20, 3);
+            
+            // Draw torch stick
+            this.ctx.fillStyle = '#654321';
+            this.ctx.fillRect(torch.x - 3, torch.y - 15, 6, 20);
+            
+            // Draw flame with localized glow
+            const time = Date.now() / 1000;
+            const flameY = torch.y - 20 + Math.sin(time + torch.flameOffset) * 1.5; // Reduced movement
+            
+            // Draw glow
+            const gradient = this.ctx.createRadialGradient(
+                torch.x, flameY, 5,
+                torch.x, flameY, 30
+            );
+            gradient.addColorStop(0, 'rgba(255, 68, 0, 0.3)');
+            gradient.addColorStop(1, 'rgba(255, 68, 0, 0)');
+            
+            this.ctx.fillStyle = gradient;
+            this.ctx.beginPath();
+            this.ctx.arc(torch.x, flameY, 30, 0, Math.PI * 2);
+            this.ctx.fill();
+            
+            // Draw flame
             this.ctx.font = '20px Arial';
             this.ctx.textAlign = 'center';
             this.ctx.textBaseline = 'middle';
-            this.ctx.fillText('🔥', 0, 0);
+            this.ctx.fillText('🔥', torch.x, flameY);
             
             this.ctx.restore();
         });
