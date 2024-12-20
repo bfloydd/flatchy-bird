@@ -54,7 +54,7 @@ class FlappyBird {
             GHOST: {
                 emoji: '👻',
                 level: 2,
-                size: 40,
+                size: 50,
                 velocity: -1.4,
                 projectileEmoji: '☠️'
             },
@@ -68,7 +68,7 @@ class FlappyBird {
             ANGRY: {
                 emoji: '😠',
                 level: 6,
-                size: 45,
+                size: 50,
                 velocity: -1.8,
                 projectileEmoji: '💢'
             },
@@ -109,7 +109,7 @@ class FlappyBird {
         this.background = {
             torches: Array(4).fill().map((_, i) => ({
                 x: i * (this.canvas.width / 3),
-                y: 100 + (i % 2) * 50,  // Alternate torch heights
+                y: 60 + (i % 2) * 30,  // Changed from 100 + (i % 2) * 50 to be higher
                 flameOffset: Math.random() * Math.PI
             }))
         };
