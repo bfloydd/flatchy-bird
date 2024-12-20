@@ -204,7 +204,7 @@ class FlappyBird {
             );
         });
         
-        if (this.gameStarted) {
+        if (this.gameStarted && !this.gameOver) {
             this.ctx.fillStyle = '#fff';
             this.ctx.font = '32px Arial';
             this.ctx.textAlign = 'center';
