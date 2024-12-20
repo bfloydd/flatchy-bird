@@ -24,6 +24,14 @@ class FlappyBird {
         this.gameStarted = false;
         this.gameOver = false;
         
+        this.animationFrame = null;
+        this.restartButton = {
+            x: this.canvas.width / 2 - 50,
+            y: this.canvas.height / 2 + 60,
+            width: 100,
+            height: 40
+        };
+        
         this.bindEvents();
         this.init();
     }
@@ -43,20 +51,52 @@ class FlappyBird {
             }
         };
         
-        this.canvas.addEventListener('click', handleInput);
+        this.canvas.addEventListener('click', (e) => {
+            if (this.gameOver) {
+                const rect = this.canvas.getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                const clickY = e.clientY - rect.top;
+                
+                if (clickX >= this.restartButton.x && 
+                    clickX <= this.restartButton.x + this.restartButton.width &&
+                    clickY >= this.restartButton.y && 
+                    clickY <= this.restartButton.y + this.restartButton.height) {
+                    this.restart();
+                }
+            } else {
+                handleInput();
+            }
+        });
+
         document.addEventListener('keydown', (e) => {
-            if (e.code === 'Space') handleInput();
+            if (e.code === 'Space' && !this.gameOver) handleInput();
         });
     }
     
-    update() {
-        if (!this.gameStarted) return;
+    restart() {
+        this.bird = {
+            x: 50,
+            y: 200,
+            velocity: 0,
+            gravity: 0.5,
+            jump: -8,
+            size: 20
+        };
+        this.pipes = [];
+        this.lastPipe = 0;
+        this.score = 0;
+        this.gameStarted = false;
+        this.gameOver = false;
         
-        // Update bird
+        this.gameLoop();
+    }
+    
+    update() {
+        if (!this.gameStarted || this.gameOver) return;
+        
         this.bird.velocity += this.bird.gravity;
         this.bird.y += this.bird.velocity;
         
-        // Generate pipes
         const now = Date.now();
         if (now - this.lastPipe > this.pipeInterval) {
             const pipeY = Math.random() * (this.canvas.height - this.pipeGap - 100) + 50;
@@ -68,29 +108,25 @@ class FlappyBird {
             this.lastPipe = now;
         }
         
-        // Update pipes
         this.pipes.forEach(pipe => {
             pipe.x -= 2;
             
-            // Check collision
             if (this.checkCollision(pipe)) {
                 this.gameOver = true;
             }
             
-            // Update score
             if (!pipe.scored && pipe.x + this.pipeWidth < this.bird.x) {
                 this.score++;
                 pipe.scored = true;
             }
         });
         
-        // Remove off-screen pipes
         this.pipes = this.pipes.filter(pipe => pipe.x > -this.pipeWidth);
         
-        // Check ground collision
         if (this.bird.y > this.canvas.height - this.bird.size) {
             this.gameOver = true;
             this.bird.y = this.canvas.height - this.bird.size;
+            cancelAnimationFrame(this.animationFrame);
         }
     }
     
@@ -128,16 +164,12 @@ class FlappyBird {
     }
     
     draw() {
-        // Clear canvas
         this.ctx.fillStyle = '#70c5ce';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         
-        // Draw pipes
         this.ctx.fillStyle = '#2ecc71';
         this.pipes.forEach(pipe => {
-            // Top pipe
             this.ctx.fillRect(pipe.x, 0, this.pipeWidth, pipe.y);
-            // Bottom pipe
             this.ctx.fillRect(
                 pipe.x,
                 pipe.y + this.pipeGap,
@@ -146,7 +178,6 @@ class FlappyBird {
             );
         });
         
-        // Draw bird
         this.ctx.fillStyle = '#f1c40f';
         this.ctx.fillRect(
             this.bird.x,
@@ -155,7 +186,6 @@ class FlappyBird {
             this.bird.size
         );
         
-        // Draw score
         this.ctx.fillStyle = '#fff';
         this.ctx.font = '32px Arial';
         this.ctx.textAlign = 'center';
@@ -164,7 +194,6 @@ class FlappyBird {
         this.ctx.strokeText(`${this.score}`, this.canvas.width / 2, 50);
         this.ctx.fillText(`${this.score}`, this.canvas.width / 2, 50);
         
-        // Draw game over
         if (this.gameOver) {
             this.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
             this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -179,9 +208,25 @@ class FlappyBird {
                 this.canvas.width / 2,
                 this.canvas.height / 2 + 40
             );
+            
+            this.ctx.fillStyle = '#2ecc71';
+            this.ctx.fillRect(
+                this.restartButton.x,
+                this.restartButton.y,
+                this.restartButton.width,
+                this.restartButton.height
+            );
+            
+            this.ctx.fillStyle = '#fff';
+            this.ctx.font = '20px Arial';
+            this.ctx.textAlign = 'center';
+            this.ctx.fillText(
+                'Restart',
+                this.canvas.width / 2,
+                this.restartButton.y + 25
+            );
         }
         
-        // Draw start message
         if (!this.gameStarted) {
             this.ctx.fillStyle = '#fff';
             this.ctx.font = '24px Arial';
@@ -197,6 +242,8 @@ class FlappyBird {
     gameLoop() {
         this.update();
         this.draw();
-        requestAnimationFrame(() => this.gameLoop());
+        if (!this.gameOver) {
+            this.animationFrame = requestAnimationFrame(() => this.gameLoop());
+        }
     }
 } 
