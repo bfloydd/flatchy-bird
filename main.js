@@ -11,7 +11,7 @@ class FlappyBird {
             velocity: 0,
             gravity: 0.25,
             jump: -5,
-            size: 20
+            size: 16
         };
         
         this.pipes = [];
@@ -102,7 +102,7 @@ class FlappyBird {
             velocity: 0,
             gravity: 0.25,
             jump: -5,
-            size: 20
+            size: 16
         };
         this.pipes = [];
         this.lastPipe = 0;
@@ -189,13 +189,23 @@ class FlappyBird {
         this.ctx.fillStyle = '#70c5ce';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         
-        this.ctx.fillStyle = '#2ecc71';
-        this.ctx.fillRect(
-            this.bird.x,
-            this.bird.y,
-            this.bird.size,
-            this.bird.size
-        );
+        this.ctx.save();
+        this.ctx.translate(this.bird.x + this.bird.size/2, this.bird.y + this.bird.size/2);
+        
+        let rotation = 0;
+        if (this.bird.velocity < 0) {
+            rotation = -0.3;
+        } else if (this.bird.velocity > 0) {
+            rotation = 0.3;
+        }
+        
+        this.ctx.rotate(rotation);
+        this.ctx.font = '20px Arial';
+        this.ctx.fillStyle = '#fff';
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+        this.ctx.fillText('💀', 0, 0);
+        this.ctx.restore();
         
         this.ctx.fillStyle = '#2ecc71';
         this.pipes.forEach(pipe => {
