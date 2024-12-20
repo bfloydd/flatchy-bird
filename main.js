@@ -105,6 +105,15 @@ class FlappyBird {
         this.currentLevel = 1;
         this.maxLevels = 2;  // For future levels
         
+        // Add dungeon background properties
+        this.background = {
+            torches: Array(4).fill().map((_, i) => ({
+                x: i * (this.canvas.width / 3),
+                y: 100 + (i % 2) * 50,  // Alternate torch heights
+                flameOffset: Math.random() * Math.PI
+            }))
+        };
+        
         this.bindEvents();
         this.init();
     }
@@ -208,6 +217,10 @@ class FlappyBird {
         
         // Reset level-specific properties
         this.currentLevel = 1;
+        
+        this.background.torches.forEach(torch => {
+            torch.flameOffset = Math.random() * Math.PI;
+        });
         
         this.gameLoop();
     }
@@ -408,8 +421,63 @@ class FlappyBird {
     }
     
     draw() {
-        this.ctx.fillStyle = '#70c5ce';
+        // Replace sky blue background with dungeon background
+        // Draw dark stone wall background
+        const gradient = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height);
+        gradient.addColorStop(0, '#1a1a1a');    // Very dark at top
+        gradient.addColorStop(0.5, '#2d2d2d');  // Slightly lighter in middle
+        gradient.addColorStop(1, '#1a1a1a');    // Dark at bottom
+        
+        this.ctx.fillStyle = gradient;
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        // Draw stone wall pattern
+        this.ctx.fillStyle = '#333333';
+        for (let y = 0; y < this.canvas.height; y += 40) {
+            for (let x = 0; x < this.canvas.width; x += 60) {
+                // Draw brick pattern
+                this.ctx.fillRect(x, y, 58, 38);
+                
+                // Add some random darker spots for texture
+                if (Math.random() < 0.3) {
+                    this.ctx.fillStyle = '#2b2b2b';
+                    this.ctx.fillRect(
+                        x + Math.random() * 30,
+                        y + Math.random() * 20,
+                        10,
+                        10
+                    );
+                    this.ctx.fillStyle = '#333333';
+                }
+            }
+        }
+        
+        // Draw wall torches
+        this.background.torches.forEach(torch => {
+            // Draw torch holder
+            this.ctx.fillStyle = '#4a4a4a';
+            this.ctx.fillRect(torch.x - 5, torch.y, 10, 20);
+            
+            // Draw animated flame
+            const time = Date.now() / 1000;
+            const flameY = torch.y - 10 + Math.sin(time + torch.flameOffset) * 2;
+            
+            this.ctx.save();
+            this.ctx.translate(torch.x, flameY);
+            
+            // Add glow effect
+            this.ctx.shadowColor = '#ff4400';
+            this.ctx.shadowBlur = 20;
+            this.ctx.shadowOffsetX = 0;
+            this.ctx.shadowOffsetY = 0;
+            
+            this.ctx.font = '20px Arial';
+            this.ctx.textAlign = 'center';
+            this.ctx.textBaseline = 'middle';
+            this.ctx.fillText('🔥', 0, 0);
+            
+            this.ctx.restore();
+        });
         
         // Only draw the skull and flames if game has started
         if (this.gameStarted) {
