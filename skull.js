@@ -669,25 +669,36 @@ class FlappyBird {
             this.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
             this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
             
-            // Draw title with flame and skull emojis
+            // Draw title with effects
+            this.ctx.save();
+            
+            // Main text with shadow and glow
+            this.ctx.shadowColor = '#FF0000';
+            this.ctx.shadowBlur = 20;
+            this.ctx.shadowOffsetX = 0;
+            this.ctx.shadowOffsetY = 0;
+            
+            // Glitch effect
+            const glitchOffset = Math.random() * 5 - 2.5;
+            
+            // Red layer
+            this.ctx.fillStyle = '#FF0000';
+            this.ctx.font = 'bold 43px Arial';
             this.ctx.textAlign = 'center';
-            this.ctx.textBaseline = 'middle';
+            this.ctx.fillText('FLAMING', this.canvas.width / 2 + glitchOffset, this.canvas.height / 3 - 40);
+            this.ctx.fillText('BIRD SKULL', this.canvas.width / 2 + glitchOffset, this.canvas.height / 3 + 10);
             
-            // Draw shadow for main title
-            this.ctx.fillStyle = '#ff4d4d';
-            this.ctx.font = 'bold 40px Arial';
-            this.ctx.fillText('FLAMING', this.canvas.width / 2 + 2, 140 + 2);
-            this.ctx.fillText('BIRD SKULL', this.canvas.width / 2 + 2, 180 + 2);
-            
-            // Draw main title with gradient
-            this.ctx.fillStyle = '#fff';
-            this.ctx.font = 'bold 40px Arial';
-            this.ctx.fillText('FLAMING', this.canvas.width / 2, 140);
-            this.ctx.fillText('BIRD SKULL', this.canvas.width / 2, 180);
+            // Main layer
+            this.ctx.fillStyle = '#FFF';
+            this.ctx.font = 'bold 42px Arial';
+            this.ctx.fillText('FLAMING', this.canvas.width / 2, this.canvas.height / 3 - 40);
+            this.ctx.fillText('BIRD SKULL', this.canvas.width / 2, this.canvas.height / 3 + 10);
             
             // Add flame and skull decorations
             this.ctx.font = '30px Arial';
-            this.ctx.fillText('🔥 💀 🔥', this.canvas.width / 2, 220);
+            this.ctx.fillText('🔥 💀 🔥', this.canvas.width / 2, this.canvas.height / 3 + 60);
+            
+            this.ctx.restore();
             
             // Draw start button with dungeon styling
             this.ctx.save();
