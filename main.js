@@ -84,6 +84,23 @@ class FlappyBird {
         // Track all active bosses
         this.bosses = [];
         
+        // Add victory state and continue button
+        this.levelComplete = false;
+        this.continueButton = {
+            x: this.canvas.width / 2 - 150,
+            y: this.canvas.height / 2 + 100,
+            width: 300,
+            height: 60
+        };
+        
+        // Add flash effect properties
+        this.flashEffect = {
+            active: false,
+            duration: 60,  // frames
+            currentFrame: 0,
+            colors: ['#FF0000', '#00FF00', '#0000FF', '#FF00FF', '#FFFF00']
+        };
+        
         this.bindEvents();
         this.init();
     }
@@ -108,7 +125,15 @@ class FlappyBird {
             const clickX = e.clientX - rect.left;
             const clickY = e.clientY - rect.top;
             
-            if (this.gameOver) {
+            if (this.levelComplete) {
+                if (clickX >= this.continueButton.x && 
+                    clickX <= this.continueButton.x + this.continueButton.width &&
+                    clickY >= this.continueButton.y && 
+                    clickY <= this.continueButton.y + this.continueButton.height) {
+                    console.log('Continue to Level 2 clicked!');
+                    // Future implementation for Level 2
+                }
+            } else if (this.gameOver) {
                 if (clickX >= this.restartButton.x && 
                     clickX <= this.restartButton.x + this.restartButton.width &&
                     clickY >= this.restartButton.y && 
@@ -157,11 +182,13 @@ class FlappyBird {
         
         this.bosses = []; // Clear all bosses
         
+        this.levelComplete = false;
+        
         this.gameLoop();
     }
     
     update() {
-        if (!this.gameStarted || this.gameOver) return;
+        if (!this.gameStarted || this.gameOver || this.levelComplete) return;
         
         this.bird.velocity += this.bird.gravity;
         this.bird.y += this.bird.velocity;
@@ -303,6 +330,23 @@ class FlappyBird {
                 projectile.y < this.canvas.height + projectile.size
             );
         });
+        
+        // Check for level completion
+        if (this.score >= 10) {
+            if (!this.levelComplete) {
+                this.levelComplete = true;
+                this.flashEffect.active = true;
+                cancelAnimationFrame(this.animationFrame);
+            }
+            
+            // Update flash effect
+            if (this.flashEffect.active) {
+                this.flashEffect.currentFrame++;
+                if (this.flashEffect.currentFrame >= this.flashEffect.duration) {
+                    this.flashEffect.active = false;
+                }
+            }
+        }
     }
     
     checkCollision(pipe) {
@@ -539,6 +583,84 @@ class FlappyBird {
                 });
             }
         });
+        
+        // Update level complete screen with scary styling
+        if (this.levelComplete) {
+            // Draw psychedelic flash effect
+            if (this.flashEffect.active) {
+                const flashColor = this.flashEffect.colors[
+                    Math.floor(this.flashEffect.currentFrame / 4) % this.flashEffect.colors.length
+                ];
+                this.ctx.fillStyle = flashColor;
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+            }
+            
+            this.ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+            
+            // Draw scary text with effects
+            this.ctx.save();
+            
+            // Add dripping blood effect
+            const bloodDrops = '🩸'.repeat(15);
+            this.ctx.font = '20px Arial';
+            this.ctx.fillStyle = '#FF0000';
+            this.ctx.textAlign = 'center';
+            this.ctx.fillText(bloodDrops, this.canvas.width / 2, 30);
+            
+            // Main text with shadow and glow
+            this.ctx.shadowColor = '#FF0000';
+            this.ctx.shadowBlur = 20;
+            this.ctx.shadowOffsetX = 0;
+            this.ctx.shadowOffsetY = 0;
+            
+            // Glitch effect
+            const glitchOffset = Math.random() * 5 - 2.5;
+            
+            // Red layer
+            this.ctx.fillStyle = '#FF0000';
+            this.ctx.font = 'bold 52px Arial';
+            this.ctx.fillText('LEVEL ONE', this.canvas.width / 2 + glitchOffset, this.canvas.height / 3 - 40);
+            
+            // Main layer
+            this.ctx.fillStyle = '#FFF';
+            this.ctx.font = 'bold 48px Arial';
+            this.ctx.fillText('LEVEL ONE', this.canvas.width / 2, this.canvas.height / 3 - 40);
+            
+            // Complete text with skull decorations
+            this.ctx.fillText('COMPLETE!', this.canvas.width / 2, this.canvas.height / 3 + 20);
+            this.ctx.font = '30px Arial';
+            this.ctx.fillText('💀 💀 💀', this.canvas.width / 2, this.canvas.height / 3 + 70);
+            
+            this.ctx.restore();
+            
+            // Draw larger continue button with spooky styling
+            this.ctx.save();
+            // Add stronger glow effect
+            this.ctx.shadowColor = '#FF0000';
+            this.ctx.shadowBlur = 20;
+            
+            // Make button more red to match image
+            this.ctx.fillStyle = '#FF0000';
+            this.ctx.fillRect(
+                this.continueButton.x,
+                this.continueButton.y,
+                this.continueButton.width,
+                this.continueButton.height
+            );
+            
+            this.ctx.fillStyle = '#fff';
+            this.ctx.font = 'bold 26px Arial';  // Reduced from 32px to 26px
+            this.ctx.textAlign = 'center';
+            this.ctx.textBaseline = 'middle';
+            this.ctx.fillText(
+                'Continue... if you dare',
+                this.canvas.width / 2,
+                this.continueButton.y + this.continueButton.height/2
+            );
+            
+            this.ctx.restore();
+        }
     }
     
     drawFireBase() {
