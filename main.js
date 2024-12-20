@@ -83,10 +83,14 @@ class FlappyBird {
         });
 
         document.addEventListener('keydown', (e) => {
-            if (e.code === 'Space' && !this.gameOver && !this.gameStarted) {
-                handleInput();
-            } else if (e.code === 'Space' && !this.gameOver) {
-                handleInput();
+            if (e.code === 'Space') {
+                if (this.gameOver) {
+                    this.restart();
+                } else if (!this.gameStarted) {
+                    handleInput();
+                } else {
+                    handleInput();
+                }
             }
         });
     }
