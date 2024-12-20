@@ -500,21 +500,51 @@ class FlappyBird {
         }
         
         if (this.gameOver) {
-            this.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+            this.ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
             this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
             
-            this.ctx.fillStyle = '#fff';
-            this.ctx.font = '48px Arial';
-            this.ctx.textAlign = 'center';
-            this.ctx.fillText('Game Over!', this.canvas.width / 2, this.canvas.height / 3);
-            this.ctx.font = '24px Arial';
-            this.ctx.fillText(
-                `Final Score: ${this.score}`,
-                this.canvas.width / 2,
-                this.canvas.height / 3 + 40
-            );
+            // Draw scary text with effects
+            this.ctx.save();
             
-            this.ctx.fillStyle = '#2ecc71';
+            // Add dripping blood effect
+            const bloodDrops = '🩸'.repeat(15);
+            this.ctx.font = '20px Arial';
+            this.ctx.fillStyle = '#FF0000';
+            this.ctx.textAlign = 'center';
+            this.ctx.fillText(bloodDrops, this.canvas.width / 2, 30);
+            
+            // Main text with shadow and glow
+            this.ctx.shadowColor = '#FF0000';
+            this.ctx.shadowBlur = 20;
+            this.ctx.shadowOffsetX = 0;
+            this.ctx.shadowOffsetY = 0;
+            
+            // Glitch effect
+            const glitchOffset = Math.random() * 5 - 2.5;
+            
+            // Red layer
+            this.ctx.fillStyle = '#FF0000';
+            this.ctx.font = 'bold 46px Arial';
+            this.ctx.fillText('GAME OVER', this.canvas.width / 2 + glitchOffset, this.canvas.height / 3 - 40);
+            
+            // Main layer
+            this.ctx.fillStyle = '#FFF';
+            this.ctx.font = 'bold 42px Arial';
+            this.ctx.fillText('GAME OVER', this.canvas.width / 2, this.canvas.height / 3 - 40);
+            
+            // Score text with skull decorations
+            this.ctx.fillText(`SCORE: ${this.score}`, this.canvas.width / 2, this.canvas.height / 3 + 20);
+            this.ctx.font = '30px Arial';
+            this.ctx.fillText('💀 💀 💀', this.canvas.width / 2, this.canvas.height / 3 + 70);
+            
+            this.ctx.restore();
+            
+            // Draw restart button with spooky styling
+            this.ctx.save();
+            this.ctx.shadowColor = '#FF0000';
+            this.ctx.shadowBlur = 20;
+            
+            this.ctx.fillStyle = '#FF0000';
             this.ctx.fillRect(
                 this.restartButton.x,
                 this.restartButton.y,
@@ -523,7 +553,7 @@ class FlappyBird {
             );
             
             this.ctx.fillStyle = '#fff';
-            this.ctx.font = '20px Arial';
+            this.ctx.font = 'bold 26px Arial';
             this.ctx.textAlign = 'center';
             this.ctx.textBaseline = 'middle';
             this.ctx.fillText(
@@ -531,6 +561,8 @@ class FlappyBird {
                 this.canvas.width / 2,
                 this.restartButton.y + this.restartButton.height/2
             );
+            
+            this.ctx.restore();
         }
         
         if (!this.gameStarted) {
