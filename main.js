@@ -27,14 +27,14 @@ class FlappyBird {
         this.animationFrame = null;
         this.restartButton = {
             x: this.canvas.width / 2 - 50,
-            y: this.canvas.height / 2 + 60,
+            y: this.canvas.height / 2 + 20,
             width: 100,
             height: 40
         };
         
         this.startButton = {
             x: this.canvas.width / 2 - 50,
-            y: this.canvas.height / 2 + 60,
+            y: this.canvas.height / 2 + 20,
             width: 100,
             height: 40
         };
@@ -189,49 +189,52 @@ class FlappyBird {
         this.ctx.fillStyle = '#70c5ce';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         
-        this.ctx.save();
-        this.ctx.translate(this.bird.x + this.bird.size/2, this.bird.y + this.bird.size/2);
-        
-        let rotation = 0;
-        if (this.bird.velocity < 0) {
-            rotation = -0.3;
-        } else if (this.bird.velocity > 0) {
-            rotation = 0.3;
+        // Only draw the skull and flames if game has started
+        if (this.gameStarted) {
+            this.ctx.save();
+            this.ctx.translate(this.bird.x + this.bird.size/2, this.bird.y + this.bird.size/2);
+            
+            let rotation = 0;
+            if (this.bird.velocity < 0) {
+                rotation = -0.3;
+            } else if (this.bird.velocity > 0) {
+                rotation = 0.3;
+            }
+            
+            // Draw flames behind skull
+            this.ctx.save();
+            if (this.bird.velocity < 0) {
+                // Multiple flames trailing when moving up
+                this.ctx.translate(-this.bird.size/2, this.bird.size/4);
+                this.ctx.rotate(-0.3);
+                this.ctx.font = '25px Arial';
+                this.ctx.fillText('🔥', 0, 0);
+                this.ctx.font = '20px Arial';
+                this.ctx.fillText('🔥', -15, 0);
+                this.ctx.font = '18px Arial';
+                this.ctx.fillText('🔥', -25, 0);
+            } else {
+                // Multiple flames trailing when moving down
+                this.ctx.translate(-this.bird.size/2, -this.bird.size/4);
+                this.ctx.rotate(0.3);
+                this.ctx.font = '25px Arial';
+                this.ctx.fillText('🔥', 0, 0);
+                this.ctx.font = '20px Arial';
+                this.ctx.fillText('🔥', -15, 0);
+                this.ctx.font = '18px Arial';
+                this.ctx.fillText('🔥', -25, 0);
+            }
+            this.ctx.restore();
+            
+            // Draw skull with rotation
+            this.ctx.rotate(rotation);
+            this.ctx.font = '30px Arial';
+            this.ctx.fillStyle = '#fff';
+            this.ctx.textAlign = 'center';
+            this.ctx.textBaseline = 'middle';
+            this.ctx.fillText('💀', 0, 0);
+            this.ctx.restore();
         }
-        
-        // Draw flames behind skull
-        this.ctx.save();
-        if (this.bird.velocity < 0) {
-            // Multiple flames trailing when moving up
-            this.ctx.translate(-this.bird.size/2, this.bird.size/4);
-            this.ctx.rotate(-0.3);
-            this.ctx.font = '25px Arial';
-            this.ctx.fillText('🔥', 0, 0);
-            this.ctx.font = '20px Arial';
-            this.ctx.fillText('🔥', -15, 0);
-            this.ctx.font = '18px Arial';
-            this.ctx.fillText('🔥', -25, 0);
-        } else {
-            // Multiple flames trailing when moving down
-            this.ctx.translate(-this.bird.size/2, -this.bird.size/4);
-            this.ctx.rotate(0.3);
-            this.ctx.font = '25px Arial';
-            this.ctx.fillText('🔥', 0, 0);
-            this.ctx.font = '20px Arial';
-            this.ctx.fillText('🔥', -15, 0);
-            this.ctx.font = '18px Arial';
-            this.ctx.fillText('🔥', -25, 0);
-        }
-        this.ctx.restore();
-        
-        // Draw skull with rotation
-        this.ctx.rotate(rotation);
-        this.ctx.font = '30px Arial';
-        this.ctx.fillStyle = '#fff';
-        this.ctx.textAlign = 'center';
-        this.ctx.textBaseline = 'middle';
-        this.ctx.fillText('💀', 0, 0);
-        this.ctx.restore();
         
         this.ctx.fillStyle = '#2ecc71';
         this.pipes.forEach(pipe => {
@@ -261,12 +264,12 @@ class FlappyBird {
             this.ctx.fillStyle = '#fff';
             this.ctx.font = '48px Arial';
             this.ctx.textAlign = 'center';
-            this.ctx.fillText('Game Over!', this.canvas.width / 2, this.canvas.height / 2);
+            this.ctx.fillText('Game Over!', this.canvas.width / 2, this.canvas.height / 3);
             this.ctx.font = '24px Arial';
             this.ctx.fillText(
                 `Final Score: ${this.score}`,
                 this.canvas.width / 2,
-                this.canvas.height / 2 + 40
+                this.canvas.height / 3 + 40
             );
             
             this.ctx.fillStyle = '#2ecc71';
@@ -291,6 +294,27 @@ class FlappyBird {
             this.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
             this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
             
+            // Draw title with flame and skull emojis
+            this.ctx.textAlign = 'center';
+            this.ctx.textBaseline = 'middle';
+            
+            // Draw shadow for main title
+            this.ctx.fillStyle = '#ff4d4d';
+            this.ctx.font = 'bold 40px Arial';
+            this.ctx.fillText('FLAMING', this.canvas.width / 2 + 2, 140 + 2);
+            this.ctx.fillText('BIRD SKULL', this.canvas.width / 2 + 2, 180 + 2);
+            
+            // Draw main title with gradient
+            this.ctx.fillStyle = '#fff';
+            this.ctx.font = 'bold 40px Arial';
+            this.ctx.fillText('FLAMING', this.canvas.width / 2, 140);
+            this.ctx.fillText('BIRD SKULL', this.canvas.width / 2, 180);
+            
+            // Add flame and skull decorations
+            this.ctx.font = '30px Arial';
+            this.ctx.fillText('🔥 💀 🔥', this.canvas.width / 2, 220);
+            
+            // Draw start button
             this.ctx.fillStyle = '#2ecc71';
             this.ctx.fillRect(
                 this.startButton.x,
@@ -302,10 +326,11 @@ class FlappyBird {
             this.ctx.fillStyle = '#fff';
             this.ctx.font = '20px Arial';
             this.ctx.textAlign = 'center';
+            this.ctx.textBaseline = 'middle';
             this.ctx.fillText(
                 'Start',
                 this.canvas.width / 2,
-                this.startButton.y + 25
+                this.startButton.y + this.startButton.height/2
             );
         }
     }
