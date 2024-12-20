@@ -34,7 +34,7 @@ class FlappyBird {
         
         this.startButton = {
             x: this.canvas.width / 2 - 50,
-            y: this.canvas.height / 2 - 20,
+            y: this.canvas.height / 2 + 60,
             width: 100,
             height: 40
         };
