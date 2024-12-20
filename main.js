@@ -32,6 +32,13 @@ class FlappyBird {
             height: 40
         };
         
+        this.startButton = {
+            x: this.canvas.width / 2 - 50,
+            y: this.canvas.height / 2 - 20,
+            width: 100,
+            height: 40
+        };
+        
         this.bindEvents();
         this.init();
     }
@@ -52,16 +59,23 @@ class FlappyBird {
         };
         
         this.canvas.addEventListener('click', (e) => {
+            const rect = this.canvas.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const clickY = e.clientY - rect.top;
+            
             if (this.gameOver) {
-                const rect = this.canvas.getBoundingClientRect();
-                const clickX = e.clientX - rect.left;
-                const clickY = e.clientY - rect.top;
-                
                 if (clickX >= this.restartButton.x && 
                     clickX <= this.restartButton.x + this.restartButton.width &&
                     clickY >= this.restartButton.y && 
                     clickY <= this.restartButton.y + this.restartButton.height) {
                     this.restart();
+                }
+            } else if (!this.gameStarted) {
+                if (clickX >= this.startButton.x && 
+                    clickX <= this.startButton.x + this.startButton.width &&
+                    clickY >= this.startButton.y && 
+                    clickY <= this.startButton.y + this.startButton.height) {
+                    handleInput();
                 }
             } else {
                 handleInput();
@@ -69,7 +83,11 @@ class FlappyBird {
         });
 
         document.addEventListener('keydown', (e) => {
-            if (e.code === 'Space' && !this.gameOver) handleInput();
+            if (e.code === 'Space' && !this.gameOver && !this.gameStarted) {
+                handleInput();
+            } else if (e.code === 'Space' && !this.gameOver) {
+                handleInput();
+            }
         });
     }
     
@@ -228,13 +246,24 @@ class FlappyBird {
         }
         
         if (!this.gameStarted) {
+            this.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+            
+            this.ctx.fillStyle = '#2ecc71';
+            this.ctx.fillRect(
+                this.startButton.x,
+                this.startButton.y,
+                this.startButton.width,
+                this.startButton.height
+            );
+            
             this.ctx.fillStyle = '#fff';
-            this.ctx.font = '24px Arial';
+            this.ctx.font = '20px Arial';
             this.ctx.textAlign = 'center';
             this.ctx.fillText(
-                'Click or Press Space to Start',
+                'Start',
                 this.canvas.width / 2,
-                this.canvas.height / 2
+                this.startButton.y + 25
             );
         }
     }
