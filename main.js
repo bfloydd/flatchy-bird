@@ -9,8 +9,8 @@ class FlappyBird {
             x: 50,
             y: 200,
             velocity: 0,
-            gravity: 0.5,
-            jump: -8,
+            gravity: 0.25,
+            jump: -5,
             size: 20
         };
         
@@ -100,8 +100,8 @@ class FlappyBird {
             x: 50,
             y: 200,
             velocity: 0,
-            gravity: 0.5,
-            jump: -8,
+            gravity: 0.25,
+            jump: -5,
             size: 20
         };
         this.pipes = [];
