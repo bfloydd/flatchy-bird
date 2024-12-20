@@ -3,25 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flappy Bird Clone</title>
+    <title>Game Selection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet">
     <style>
         body {
             margin: 0;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             background: #333;
+            font-family: 'Bangers', cursive;
+            letter-spacing: 2px;
         }
-        canvas {
-            border: 2px solid #000;
+        h1 {
+            color: #fff;
+            margin-bottom: 2rem;
+            text-align: center;
+            font-size: 3rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .button-container {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .game-button {
+            padding: 1.5rem 2rem;
+            font-size: 1.4rem;
+            color: #444444;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            background: url('plain_btn.png') no-repeat center center;
+            background-size: 100% 100%;
+            min-width: 200px;
+            min-height: 60px;
+            text-align: center;
+            text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            letter-spacing: 1px;
+        }
+        .game-button:hover {
+            filter: brightness(1.1);
         }
     </style>
 </head>
 <body>
-    <script src="main.js"></script>
-    <script>
-        new FlappyBird();
-    </script>
+    <h1>Choose Your Game</h1>
+    <div class="button-container">
+        <a href="skull.html" class="game-button">Flaming Skull Bird</a>
+        <a href="flatchy.html" class="game-button">Flatchy Bird</a>
+    </div>
 </body>
-</html> 
+</html>
