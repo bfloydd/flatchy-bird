@@ -656,29 +656,13 @@ class FlappyBird {
             this.ctx.restore();
             
             // Draw restart button with spooky styling
-            this.ctx.save();
-            this.ctx.shadowColor = '#FF0000';
-            this.ctx.shadowBlur = 20;
-            
-            this.ctx.fillStyle = '#FF0000';
-            this.ctx.fillRect(
+            this.drawDungeonButton(
                 this.restartButton.x,
                 this.restartButton.y,
                 this.restartButton.width,
-                this.restartButton.height
+                this.restartButton.height,
+                'Restart'
             );
-            
-            this.ctx.fillStyle = '#fff';
-            this.ctx.font = 'bold 26px Arial';
-            this.ctx.textAlign = 'center';
-            this.ctx.textBaseline = 'middle';
-            this.ctx.fillText(
-                'Restart',
-                this.canvas.width / 2,
-                this.restartButton.y + this.restartButton.height/2
-            );
-            
-            this.ctx.restore();
         }
         
         if (!this.gameStarted) {
@@ -705,8 +689,15 @@ class FlappyBird {
             this.ctx.font = '30px Arial';
             this.ctx.fillText('🔥 💀 🔥', this.canvas.width / 2, 220);
             
-            // Draw start button
-            this.ctx.fillStyle = '#2ecc71';
+            // Draw start button with dungeon styling
+            this.ctx.save();
+            
+            // Add glow effect
+            this.ctx.shadowColor = '#ff4400';
+            this.ctx.shadowBlur = 20;
+            
+            // Draw stone button background
+            this.ctx.fillStyle = '#2C2F33';  // Dark slate color (matching pillars)
             this.ctx.fillRect(
                 this.startButton.x,
                 this.startButton.y,
@@ -714,15 +705,56 @@ class FlappyBird {
                 this.startButton.height
             );
             
+            // Add stone texture
+            this.ctx.fillStyle = '#23272A';  // Darker shade for depth
+            for (let i = 0; i < this.startButton.width; i += 20) {
+                this.ctx.fillRect(
+                    this.startButton.x + i,
+                    this.startButton.y,
+                    2,
+                    this.startButton.height
+                );
+            }
+            
+            // Add metallic border
+            this.ctx.fillStyle = '#4A4D50';
+            this.ctx.fillRect(
+                this.startButton.x - 2,
+                this.startButton.y - 2,
+                this.startButton.width + 4,
+                4
+            );
+            this.ctx.fillRect(
+                this.startButton.x - 2,
+                this.startButton.y + this.startButton.height - 2,
+                this.startButton.width + 4,
+                4
+            );
+            this.ctx.fillRect(
+                this.startButton.x - 2,
+                this.startButton.y,
+                4,
+                this.startButton.height
+            );
+            this.ctx.fillRect(
+                this.startButton.x + this.startButton.width - 2,
+                this.startButton.y,
+                4,
+                this.startButton.height
+            );
+            
+            // Draw text with glow
             this.ctx.fillStyle = '#fff';
-            this.ctx.font = '20px Arial';
+            this.ctx.font = 'bold 24px Arial';
             this.ctx.textAlign = 'center';
             this.ctx.textBaseline = 'middle';
             this.ctx.fillText(
-                'Start',
+                'Start',  // Changed from 'Enter Dungeon' back to 'Start'
                 this.canvas.width / 2,
                 this.startButton.y + this.startButton.height/2
             );
+            
+            this.ctx.restore();
         }
         
         // Draw fire base (add this before the game over/start screen overlays)
@@ -808,31 +840,13 @@ class FlappyBird {
             this.ctx.restore();
             
             // Draw larger continue button with spooky styling
-            this.ctx.save();
-            // Add stronger glow effect
-            this.ctx.shadowColor = '#FF0000';
-            this.ctx.shadowBlur = 20;
-            
-            // Make button more red to match image
-            this.ctx.fillStyle = '#FF0000';
-            this.ctx.fillRect(
+            this.drawDungeonButton(
                 this.continueButton.x,
                 this.continueButton.y,
                 this.continueButton.width,
-                this.continueButton.height
+                this.continueButton.height,
+                'Continue... if you dare'
             );
-            
-            this.ctx.fillStyle = '#fff';
-            this.ctx.font = 'bold 26px Arial';  // Reduced from 32px to 26px
-            this.ctx.textAlign = 'center';
-            this.ctx.textBaseline = 'middle';
-            this.ctx.fillText(
-                'Continue... if you dare',
-                this.canvas.width / 2,
-                this.continueButton.y + this.continueButton.height/2
-            );
-            
-            this.ctx.restore();
         }
     }
     
@@ -877,5 +891,40 @@ class FlappyBird {
         // - Different pipe speeds
         // For now, just restart the game
         this.restart();
+    }
+    
+    // Add helper method for drawing dungeon-style buttons
+    drawDungeonButton(x, y, width, height, text) {
+        this.ctx.save();
+        
+        // Add glow effect
+        this.ctx.shadowColor = '#ff4400';
+        this.ctx.shadowBlur = 20;
+        
+        // Draw stone button background
+        this.ctx.fillStyle = '#2C2F33';  // Dark slate color
+        this.ctx.fillRect(x, y, width, height);
+        
+        // Add stone texture
+        this.ctx.fillStyle = '#23272A';  // Darker shade for depth
+        for (let i = 0; i < width; i += 20) {
+            this.ctx.fillRect(x + i, y, 2, height);
+        }
+        
+        // Add metallic border
+        this.ctx.fillStyle = '#4A4D50';
+        this.ctx.fillRect(x - 2, y - 2, width + 4, 4);
+        this.ctx.fillRect(x - 2, y + height - 2, width + 4, 4);
+        this.ctx.fillRect(x - 2, y, 4, height);
+        this.ctx.fillRect(x + width - 2, y, 4, height);
+        
+        // Draw text with glow
+        this.ctx.fillStyle = '#fff';
+        this.ctx.font = 'bold 24px Arial';
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+        this.ctx.fillText(text, x + width/2, y + height/2);
+        
+        this.ctx.restore();
     }
 } 
