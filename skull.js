@@ -53,9 +53,9 @@ class FlappyBird {
         
         // Add fire base properties
         this.fireBase = {
-            flames: Array(10).fill().map((_, i) => ({
-                x: i * (this.canvas.width / 9),
-                size: Math.random() * 10 + 25,
+            flames: Array(20).fill().map((_, i) => ({
+                x: i * (this.canvas.width / 19),
+                size: Math.random() * 10 + 30,
                 offset: Math.random() * Math.PI
             }))
         };
@@ -943,26 +943,40 @@ class FlappyBird {
     }
     
     drawFireBase() {
-        // Only draw fire if game has started
-        if (!this.gameStarted) return;
-        
-        // Draw continuous flames
-        this.fireBase.flames.forEach((flame, i) => {
-            this.ctx.save();
-            this.ctx.translate(flame.x, this.canvas.height + 10); // Move flames slightly below bottom edge
-            
-            // Minimal animation to prevent gaps
+        this.ctx.save();
+        this.fireBase.flames.forEach((flame, index) => {
             const time = Date.now() / 1000;
-            const sizeOffset = Math.sin(time + flame.offset) * 2;
-            const yOffset = Math.cos(time + flame.offset) * 1;
+            const y = this.canvas.height - 20 + Math.sin(time + flame.offset) * 5;
             
-            this.ctx.font = `${flame.size + sizeOffset}px Arial`;
+            // Draw glow effect for more intense fire
+            const gradient = this.ctx.createRadialGradient(
+                flame.x, y, 5,
+                flame.x, y, 40
+            );
+            gradient.addColorStop(0, 'rgba(255, 50, 0, 0.4)');
+            gradient.addColorStop(1, 'rgba(255, 50, 0, 0)');
+            
+            this.ctx.fillStyle = gradient;
+            this.ctx.beginPath();
+            this.ctx.arc(flame.x, y, 40, 0, Math.PI * 2);
+            this.ctx.fill();
+            
+            // Draw larger flames
+            this.ctx.font = `${flame.size}px Arial`;
             this.ctx.textAlign = 'center';
-            this.ctx.textBaseline = 'bottom';
-            this.ctx.fillText('🔥', 0, yOffset);
+            this.ctx.textBaseline = 'middle';
+            this.ctx.fillText('🔥', flame.x, y);
             
-            this.ctx.restore();
+            // Add smaller flames between main flames for denser coverage
+            if (index < this.fireBase.flames.length - 1) {
+                const midX = (flame.x + this.fireBase.flames[index + 1].x) / 2;
+                const midSize = Math.random() * 8 + 25;
+                const midY = this.canvas.height - 15 + Math.sin(time + Math.PI) * 5;
+                this.ctx.font = `${midSize}px Arial`;
+                this.ctx.fillText('🔥', midX, midY);
+            }
         });
+        this.ctx.restore();
     }
     
     gameLoop() {
