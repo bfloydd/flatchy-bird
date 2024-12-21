@@ -2,7 +2,8 @@ class FlappyBird {
     constructor() {
         // Add starting level configuration
         this.startingLevel = 1; // Can be modified for testing different levels
-        this.speedIncreasePerLevel = 0.5; // 20% increase per level, can be modified
+        this.speedIncreasePerLevel = 0.5; // 50% increase per level, can be modified
+        this.pillarSpaceIncreasePerLevel = .05; // Increase pillar spacing per level
         
         this.canvas = document.createElement('canvas');
         this.canvas.width = 800;
@@ -232,11 +233,12 @@ class FlappyBird {
         
         // Calculate how many unscored pipes are currently in play
         const unscoredPipes = this.pipes.filter(pipe => !pipe.scored).length;
-        // Calculate how many more points needed to reach 10
-        const pointsNeeded = 10 - this.score;
+        
+        // Adjust pipe interval based on current speed and spacing increase
+        const adjustedPipeInterval = 2000 / (1 + (this.currentLevel - 1) * this.pillarSpaceIncreasePerLevel);
         
         // Only generate new pipes if we need more to reach 10 points
-        if (now - this.lastPipe > this.pipeInterval && (unscoredPipes + this.score) < 10) {
+        if (now - this.lastPipe > adjustedPipeInterval && (unscoredPipes + this.score) < 10) {
             const pipeY = Math.random() * (this.canvas.height - this.pipeGap - 100) + 50;
             this.pipes.push({
                 x: this.canvas.width,
