@@ -2,6 +2,7 @@ class FlappyBird {
     constructor() {
         // Add starting level configuration
         this.startingLevel = 1; // Can be modified for testing different levels
+        this.speedIncreasePerLevel = 0.5; // 20% increase per level, can be modified
         
         this.canvas = document.createElement('canvas');
         this.canvas.width = 800;
@@ -20,8 +21,8 @@ class FlappyBird {
         };
         
         this.baseSpeed = 1.8; // Base speed for pipes and game elements
-        // Set initial speed based on starting level (10% increase per level)
-        this.currentSpeed = this.baseSpeed * (1 + (this.startingLevel - 1) * 0.1);
+        // Set initial speed based on starting level
+        this.currentSpeed = this.baseSpeed * (1 + (this.startingLevel - 1) * this.speedIncreasePerLevel);
         
         this.pipes = [];
         this.pipeWidth = 50;
@@ -126,7 +127,7 @@ class FlappyBird {
         this.bossHasAppeared = false;
         
         // Ensure speed is set correctly for starting level
-        this.currentSpeed = this.baseSpeed * (1 + (this.startingLevel - 1) * 0.1);
+        this.currentSpeed = this.baseSpeed * (1 + (this.startingLevel - 1) * this.speedIncreasePerLevel);
         
         this.gameLoop();
     }
@@ -434,8 +435,8 @@ class FlappyBird {
     startLevel(levelNumber) {
         this.currentLevel = levelNumber;
         
-        // Increase game speed by 10% each level
-        this.currentSpeed = this.baseSpeed * (1 + (this.currentLevel - 1) * 0.1);
+        // Increase game speed based on speedIncreasePerLevel
+        this.currentSpeed = this.baseSpeed * (1 + (this.currentLevel - 1) * this.speedIncreasePerLevel);
         
         // Reset game state for new level but keep total points
         this.bird = {
