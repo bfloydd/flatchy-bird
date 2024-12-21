@@ -1,7 +1,7 @@
 class FlappyBird {
     constructor() {
         // Add starting level configuration
-        this.startingLevel = 1; // Can be modified for testing different levels
+        this.startingLevel = 10; // Can be modified for testing different levels
         this.speedIncreasePerLevel = 0.5; // 50% increase per level, can be modified
         this.pillarSpaceIncreasePerLevel = .05; // Increase pillar spacing per level
         
@@ -216,11 +216,11 @@ class FlappyBird {
         
         this.levelComplete = false;
         
-        // Reset speed to base speed
-        this.currentSpeed = this.baseSpeed;
-        
-        // Reset to starting level instead of level 1
+        // Reset to starting level first
         this.currentLevel = this.startingLevel;
+        
+        // Then set speed based on the starting level
+        this.currentSpeed = this.baseSpeed * (1 + (this.startingLevel - 1) * this.speedIncreasePerLevel);
         
         this.background.torches.forEach(torch => {
             torch.flameOffset = Math.random() * Math.PI;
