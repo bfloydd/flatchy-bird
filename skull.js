@@ -1,7 +1,7 @@
 class FlappyBird {
     constructor() {
         // Add starting level configuration
-        this.startingLevel = 3; // Can be modified for testing different levels
+        this.startingLevel = 1; // Can be modified for testing different levels
         
         this.canvas = document.createElement('canvas');
         this.canvas.width = 800;
@@ -571,8 +571,8 @@ class FlappyBird {
         // Only draw the skull and flames if game has started
         if (this.gameStarted) {
             this.ctx.save();
-            this.ctx.translate(this.bird.x + this.bird.size/2, this.bird.y + this.bird.size/2);
             
+            // Calculate rotation based on velocity
             let rotation = 0;
             if (this.bird.velocity < 0) {
                 rotation = -0.3;
@@ -580,34 +580,33 @@ class FlappyBird {
                 rotation = 0.3;
             }
             
-            // Draw flames behind skull
+            // Draw flames behind skull with rotation
             this.ctx.save();
-            if (this.bird.velocity < 0) {
-                // Multiple flames trailing when moving up
-                this.ctx.translate(-this.bird.size/2, this.bird.size/4);
-                this.ctx.rotate(-0.3);
-                this.ctx.font = '25px Arial';
-                this.ctx.fillText('🔥', 0, 0);
-                this.ctx.font = '20px Arial';
-                this.ctx.fillText('🔥', -15, 0);
-                this.ctx.font = '18px Arial';
-                this.ctx.fillText('🔥', -25, 0);
-            } else {
-                // Multiple flames trailing when moving down
-                this.ctx.translate(-this.bird.size/2, -this.bird.size/4);
-                this.ctx.rotate(0.3);
-                this.ctx.font = '25px Arial';
-                this.ctx.fillText('🔥', 0, 0);
-                this.ctx.font = '20px Arial';
-                this.ctx.fillText('🔥', -15, 0);
-                this.ctx.font = '18px Arial';
-                this.ctx.fillText('🔥', -25, 0);
-            }
+            this.ctx.translate(this.bird.x + this.bird.size/2, this.bird.y + this.bird.size/2);
+            this.ctx.rotate(rotation);
+            
+            // Draw three flames in a horizontal line with decreasing sizes
+            this.ctx.textAlign = 'center';
+            this.ctx.textBaseline = 'middle';
+            
+            // Largest flame nearest to skull
+            this.ctx.font = '18px Arial';
+            this.ctx.fillText('🔥', -20, 0);
+            
+            // Medium flame in middle
+            this.ctx.font = '14px Arial';
+            this.ctx.fillText('🔥', -32, 0);
+            
+            // Smallest flame farthest from skull
+            this.ctx.font = '12px Arial';
+            this.ctx.fillText('🔥', -42, 0);
+            
             this.ctx.restore();
             
-            // Draw skull with rotation
+            // Draw skull with same rotation
+            this.ctx.translate(this.bird.x + this.bird.size/2, this.bird.y + this.bird.size/2);
             this.ctx.rotate(rotation);
-            this.ctx.font = '30px Arial';
+            this.ctx.font = '24px Arial';
             this.ctx.fillStyle = '#fff';
             this.ctx.textAlign = 'center';
             this.ctx.textBaseline = 'middle';
