@@ -228,8 +228,14 @@ class FlappyBird {
         this.bird.y += this.bird.velocity;
         
         const now = Date.now();
-        // Only generate new pipes if we haven't reached the score limit for the level
-        if (now - this.lastPipe > this.pipeInterval && this.score < 10) {
+        
+        // Calculate how many unscored pipes are currently in play
+        const unscoredPipes = this.pipes.filter(pipe => !pipe.scored).length;
+        // Calculate how many more points needed to reach 10
+        const pointsNeeded = 10 - this.score;
+        
+        // Only generate new pipes if we need more to reach 10 points
+        if (now - this.lastPipe > this.pipeInterval && (unscoredPipes + this.score) < 10) {
             const pipeY = Math.random() * (this.canvas.height - this.pipeGap - 100) + 50;
             this.pipes.push({
                 x: this.canvas.width,
