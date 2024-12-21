@@ -20,7 +20,8 @@ class FlappyBird {
         };
         
         this.baseSpeed = 1.8; // Base speed for pipes and game elements
-        this.currentSpeed = this.baseSpeed; // Current speed that will increase with levels
+        // Set initial speed based on starting level (10% increase per level)
+        this.currentSpeed = this.baseSpeed * (1 + (this.startingLevel - 1) * 0.1);
         
         this.pipes = [];
         this.pipeWidth = 50;
@@ -123,6 +124,10 @@ class FlappyBird {
         // Don't initialize boss immediately
         this.bosses = [];
         this.bossHasAppeared = false;
+        
+        // Ensure speed is set correctly for starting level
+        this.currentSpeed = this.baseSpeed * (1 + (this.startingLevel - 1) * 0.1);
+        
         this.gameLoop();
     }
     
@@ -223,7 +228,8 @@ class FlappyBird {
         this.bird.y += this.bird.velocity;
         
         const now = Date.now();
-        if (now - this.lastPipe > this.pipeInterval) {
+        // Only generate new pipes if we haven't reached the score limit for the level
+        if (now - this.lastPipe > this.pipeInterval && this.score < 10) {
             const pipeY = Math.random() * (this.canvas.height - this.pipeGap - 100) + 50;
             this.pipes.push({
                 x: this.canvas.width,
