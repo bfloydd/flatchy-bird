@@ -118,6 +118,12 @@ class FlappyBird {
         // Track if boss has appeared for current level
         this.bossHasAppeared = false;
         
+        // Add boss shooting timer
+        this.bossShootTimer = {
+            lastShot: 0,
+            minInterval: 3000  // Minimum 3 seconds between shots
+        };
+        
         this.bindEvents();
         this.init();
     }
@@ -326,16 +332,10 @@ class FlappyBird {
         this.bosses.forEach(boss => {
             // Handle entrance animation
             if (boss.entranceProgress < 1) {
-                boss.entranceProgress += 0.02; // Adjust speed of entrance
-                
-                // Smooth easing function for entrance
+                boss.entranceProgress += 0.02;
                 const easing = 1 - Math.pow(1 - boss.entranceProgress, 3);
-                
-                // Interpolate between start and target positions
                 boss.x = boss.x + (boss.targetX - boss.x) * easing;
                 boss.y = boss.y + (boss.targetY - boss.y) * easing;
-                
-                // Don't process normal movement or shooting until entrance is complete
                 return;
             }
 
@@ -369,14 +369,17 @@ class FlappyBird {
                 this.gameOver = true;
             }
             
-            // Significantly reduce projectile frequency
-            if (Math.random() < 0.003 * (1 + (this.currentLevel - 1) * 0.05)) {
+            // Ensure at least one shot every few seconds
+            const timeSinceLastShot = now - this.bossShootTimer.lastShot;
+            const shouldForceShot = timeSinceLastShot > this.bossShootTimer.minInterval;
+            
+            // Either force a shot after the interval or use random chance
+            if (shouldForceShot || Math.random() < 0.003 * (1 + (this.currentLevel - 1) * 0.05)) {
                 const angle = Math.atan2(
                     this.bird.y - boss.y,
                     this.bird.x - boss.x
                 );
                 
-                // Reduce projectile speed
                 const projectileSpeed = 1.5 * (1 + (this.currentLevel - 1) * 0.08);
                 
                 boss.projectiles.push({
@@ -389,6 +392,8 @@ class FlappyBird {
                         y: Math.sin(angle) * projectileSpeed
                     }
                 });
+                
+                this.bossShootTimer.lastShot = now;
             }
             
             // Update projectiles
