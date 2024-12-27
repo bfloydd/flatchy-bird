@@ -851,11 +851,14 @@ class FlappyBird {
                 );
             }
             
-            // Score text
-            this.ctx.fillStyle = '#FFF';
-            this.ctx.font = 'bold 42px Arial';
+            // Score text with matching style
+            this.ctx.fillStyle = '#FFFFFF';
+            this.ctx.strokeStyle = '#000000';
+            this.ctx.lineWidth = 3;
+            this.ctx.font = 'bold 36px "Comic Sans MS", cursive';  // More playful font to match
             this.ctx.textAlign = 'center';
-            this.ctx.fillText(`Score: ${this.score}`, this.canvas.width / 2, this.canvas.height / 2 + 50);
+            this.ctx.strokeText(`Score: ${this.score}`, this.canvas.width / 2, this.canvas.height / 3 + 100);  // Moved up
+            this.ctx.fillText(`Score: ${this.score}`, this.canvas.width / 2, this.canvas.height / 3 + 100);  // Moved up
             
             // Draw restart button with spooky styling
             this.drawDungeonButton(
