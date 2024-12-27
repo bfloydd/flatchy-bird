@@ -623,7 +623,7 @@ class FlappyBird {
 
         // Draw scrolling ground
         if (this.groundLoaded) {
-            const groundHeight = 100; // Height of the ground section
+            const groundHeight = 60; // Reduced from 100 to 60 pixels
             const y = this.canvas.height - groundHeight;
             
             // Draw first ground image
