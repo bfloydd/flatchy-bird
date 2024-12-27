@@ -90,7 +90,7 @@ class FlappyBird {
         
         // Add starting level configuration
         this.startingLevel = 1; // Can be modified for testing different levels
-        this.speedIncreasePerLevel = 0.5; // 50% increase per level, can be modified
+        this.speedIncreasePerLevel = 0.5; // 50% increase per level
         this.pillarSpaceIncreasePerLevel = .05; // Increase pillar spacing per level
         
         this.canvas = document.createElement('canvas');
@@ -591,6 +591,10 @@ class FlappyBird {
     startLevel(levelNumber) {
         this.currentLevel = levelNumber;
         this.levelScore = 0;   // Reset level score but keep total score
+        
+        // Update speed for new level - 50% increase per level
+        this.currentSpeed = this.baseSpeed * (1 + (levelNumber - 1) * this.speedIncreasePerLevel);
+        console.log(`Level ${levelNumber} speed: ${this.currentSpeed}`); // Debug log
         
         // Reset game state for new level
         this.bird = {
