@@ -729,8 +729,8 @@ class FlappyBird {
                 this.ctx.globalAlpha = 0.8;
                 this.ctx.drawImage(
                     this.feather1,
-                    -15 - this.bird.size/3, -this.bird.size/3,
-                    this.bird.size/2.2, this.bird.size/2.2      // Smaller size
+                    -8 - this.bird.size/3, -this.bird.size/3,
+                    this.bird.size/4, this.bird.size/4
                 );
             }
             
@@ -739,8 +739,8 @@ class FlappyBird {
                 this.ctx.globalAlpha = 0.6;
                 this.ctx.drawImage(
                     this.feather2,
-                    -35 - this.bird.size/3, -this.bird.size/3,
-                    this.bird.size/2.5, this.bird.size/2.5      // Smaller size
+                    -20 - this.bird.size/3, -this.bird.size/3,
+                    this.bird.size/4.5, this.bird.size/4.5
                 );
             }
             
@@ -749,8 +749,8 @@ class FlappyBird {
                 this.ctx.globalAlpha = 0.4;
                 this.ctx.drawImage(
                     this.feather3,
-                    -55 - this.bird.size/3, -this.bird.size/3,
-                    this.bird.size/2.8, this.bird.size/2.8      // Smaller size
+                    -32 - this.bird.size/3, -this.bird.size/3,
+                    this.bird.size/5, this.bird.size/5
                 );
             }
 
@@ -759,8 +759,8 @@ class FlappyBird {
                 this.ctx.globalAlpha = 0.2;
                 this.ctx.drawImage(
                     this.feather4,
-                    -75 - this.bird.size/3, -this.bird.size/3,
-                    this.bird.size/3.1, this.bird.size/3.1      // Smaller size
+                    -44 - this.bird.size/3, -this.bird.size/3,
+                    this.bird.size/5.5, this.bird.size/5.5
                 );
             }
             
