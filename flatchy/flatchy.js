@@ -127,7 +127,7 @@ class FlappyBird {
         // Add start button
         this.startButton = {
             x: this.canvas.width / 2 - 100,
-            y: this.canvas.height / 2 + 50,
+            y: this.canvas.height / 2 + 20,
             width: 200,
             height: 50
         };
@@ -135,7 +135,7 @@ class FlappyBird {
         // Add restart button
         this.restartButton = {
             x: this.canvas.width / 2 - 100,
-            y: this.canvas.height / 2 + 50,
+            y: this.canvas.height / 2 + 20,
             width: 200,
             height: 50
         };
@@ -235,6 +235,14 @@ class FlappyBird {
         };
         this.plainBtnImg.src = 'flatchy/plain_btn.png';
         this.plainBtnLoaded = false;
+        
+        // Add title logo image
+        this.titleLogoImg = new Image();
+        this.titleLogoImg.onload = () => {
+            this.titleLogoLoaded = true;
+        };
+        this.titleLogoImg.src = 'flatchy/title_logo.png';
+        this.titleLogoLoaded = false;
         
         this.gameLoopStarted = false;  // Add flag to track if game loop is running
         this.bindEvents();
@@ -889,7 +897,7 @@ class FlappyBird {
                 this.restartButton.width = btnWidth;
                 this.restartButton.height = btnHeight;
                 this.restartButton.x = (this.canvas.width - btnWidth) / 2;
-                this.restartButton.y = this.canvas.height / 2 + 50;  // Keep same vertical position
+                this.restartButton.y = this.canvas.height / 2 + 20;  // Changed from +50 to +20
                 
                 // Draw the button image
                 this.ctx.drawImage(
@@ -917,36 +925,20 @@ class FlappyBird {
             this.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
             this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
             
-            // Draw title with effects
-            this.ctx.save();
-            
-            // Main text with shadow and glow
-            this.ctx.shadowColor = '#FF0000';
-            this.ctx.shadowBlur = 20;
-            this.ctx.shadowOffsetX = 0;
-            this.ctx.shadowOffsetY = 0;
-            
-            // Glitch effect
-            const glitchOffset = Math.random() * 5 - 2.5;
-            
-            // Red layer
-            this.ctx.fillStyle = '#FF0000';
-            this.ctx.font = `bold 43px ${this.gameFont}`;
-            this.ctx.textAlign = 'center';
-            this.ctx.fillText('FLAMING', this.canvas.width / 2 + glitchOffset, this.canvas.height / 3 - 40);
-            this.ctx.fillText('BIRD SKULL', this.canvas.width / 2 + glitchOffset, this.canvas.height / 3 + 10);
-            
-            // Main layer
-            this.ctx.fillStyle = '#FFF';
-            this.ctx.font = `bold 42px ${this.gameFont}`;
-            this.ctx.fillText('FLAMING', this.canvas.width / 2, this.canvas.height / 3 - 40);
-            this.ctx.fillText('BIRD SKULL', this.canvas.width / 2, this.canvas.height / 3 + 10);
-            
-            // Add flame and skull decorations
-            this.ctx.font = '30px Arial';
-            this.ctx.fillText('💀 💀 🔥', this.canvas.width / 2, this.canvas.height / 3 + 60);
-            
-            this.ctx.restore();
+            // Draw title logo
+            if (this.titleLogoLoaded) {
+                const logoWidth = 400;  // Base width for the logo
+                const aspectRatio = this.titleLogoImg.height / this.titleLogoImg.width;
+                const logoHeight = logoWidth * aspectRatio;
+                
+                this.ctx.drawImage(
+                    this.titleLogoImg,
+                    (this.canvas.width - logoWidth) / 2,
+                    this.canvas.height / 3 - 60,  // Position it slightly higher than the old text
+                    logoWidth,
+                    logoHeight
+                );
+            }
             
             // Draw start button image
             if (this.startBtnLoaded) {
@@ -958,7 +950,7 @@ class FlappyBird {
                 this.startButton.width = btnWidth;
                 this.startButton.height = btnHeight;
                 this.startButton.x = (this.canvas.width - btnWidth) / 2;
-                this.startButton.y = this.canvas.height / 2 + 50;  // Keep same vertical position
+                this.startButton.y = this.canvas.height / 2 + 20;  // Changed from +50 to +20
                 
                 this.ctx.drawImage(
                     this.startBtnImg,
