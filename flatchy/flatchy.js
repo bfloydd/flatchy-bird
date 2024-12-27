@@ -19,13 +19,14 @@ class FlappyBird {
         this.birdSprite.onerror = (e) => {
             console.error('Error loading sprite:', e);
         };
+        this.birdSprite.src = 'images/flatchy_flap_sprite.png';
 
         // Add background image
         this.backgroundImg = new Image();
         this.backgroundImg.onload = () => {
             this.backgroundLoaded = true;
         };
-        this.backgroundImg.src = 'flatchy/hills.png';
+        this.backgroundImg.src = 'images/hills.png';
         this.backgroundLoaded = false;
 
         // Add ground image
@@ -33,16 +34,16 @@ class FlappyBird {
         this.groundImg.onload = () => {
             this.groundLoaded = true;
         };
-        this.groundImg.src = 'flatchy/ground.png';
+        this.groundImg.src = 'images/ground.png';
         this.groundLoaded = false;
         this.groundOffset = 0;  // For scrolling effect
 
-        // Add tree image for obstacles
+        // Add tree image
         this.treeImg = new Image();
         this.treeImg.onload = () => {
             this.treeLoaded = true;
         };
-        this.treeImg.src = 'flatchy/tree.png';
+        this.treeImg.src = 'images/tree.png';
         this.treeLoaded = false;
 
         // Add feather images for trail effect
@@ -50,21 +51,21 @@ class FlappyBird {
         this.feather1.onload = () => {
             this.feather1Loaded = true;
         };
-        this.feather1.src = 'flatchy/feather_1.png';
+        this.feather1.src = 'images/feather_1.png';
         this.feather1Loaded = false;
 
         this.feather2 = new Image();
         this.feather2.onload = () => {
             this.feather2Loaded = true;
         };
-        this.feather2.src = 'flatchy/feather_2.png';
+        this.feather2.src = 'images/feather_2.png';
         this.feather2Loaded = false;
 
         this.feather3 = new Image();
         this.feather3.onload = () => {
             this.feather3Loaded = true;
         };
-        this.feather3.src = 'flatchy/feather_3.png';
+        this.feather3.src = 'images/feather_3.png';
         this.feather3Loaded = false;
 
         // Add fourth feather
@@ -72,10 +73,9 @@ class FlappyBird {
         this.feather4.onload = () => {
             this.feather4Loaded = true;
         };
-        this.feather4.src = 'flatchy/feather_4.png';
+        this.feather4.src = 'images/feather_4.png';
         this.feather4Loaded = false;
 
-        this.birdSprite.src = 'flatchy/flatchy_flap_sprite.png';
         this.spriteLoaded = false;
         this.spriteAnimation = {
             frameWidth: 8,      // Will be updated when sprite loads
@@ -106,7 +106,7 @@ class FlappyBird {
             velocity: 0,
             gravity: 0.2,
             jump: -4.5,
-            size: 48  // Increased from 24 to 48 for better visibility
+            size: 48
         };
         
         this.baseSpeed = 1.8; // Base speed for pipes and game elements
@@ -217,7 +217,7 @@ class FlappyBird {
         this.gameOverImg.onload = () => {
             this.gameOverImgLoaded = true;
         };
-        this.gameOverImg.src = 'flatchy/game_over_text.png';
+        this.gameOverImg.src = 'images/game_over_text.png';
         this.gameOverImgLoaded = false;
         
         // Add start button image
@@ -225,7 +225,7 @@ class FlappyBird {
         this.startBtnImg.onload = () => {
             this.startBtnLoaded = true;
         };
-        this.startBtnImg.src = 'flatchy/start_btn_up.png';
+        this.startBtnImg.src = 'images/start_btn_up.png';
         this.startBtnLoaded = false;
         
         // Add plain button image for restart
@@ -233,7 +233,7 @@ class FlappyBird {
         this.plainBtnImg.onload = () => {
             this.plainBtnLoaded = true;
         };
-        this.plainBtnImg.src = 'flatchy/plain_btn.png';
+        this.plainBtnImg.src = 'images/plain_btn.png';
         this.plainBtnLoaded = false;
         
         // Add title logo image
@@ -241,7 +241,7 @@ class FlappyBird {
         this.titleLogoImg.onload = () => {
             this.titleLogoLoaded = true;
         };
-        this.titleLogoImg.src = 'flatchy/title_logo.png';
+        this.titleLogoImg.src = 'images/title_logo.png';
         this.titleLogoLoaded = false;
         
         this.gameLoopStarted = false;  // Add flag to track if game loop is running
@@ -254,7 +254,7 @@ class FlappyBird {
             cloud.onload = () => {
                 cloud.loaded = true;
             };
-            cloud.src = `flatchy/cloud_0${i}.png`;
+            cloud.src = `images/cloud_0${i}.png`;
             cloud.loaded = false;
             this.clouds.push(cloud);
         }
