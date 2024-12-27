@@ -14,6 +14,15 @@ class FlappyBird {
         this.birdSprite.onerror = (e) => {
             console.error('Error loading sprite:', e);
         };
+
+        // Add background image
+        this.backgroundImg = new Image();
+        this.backgroundImg.onload = () => {
+            this.backgroundLoaded = true;
+        };
+        this.backgroundImg.src = 'flatchy/hills.png';
+        this.backgroundLoaded = false;
+
         this.birdSprite.src = 'flatchy/flatchy_flap_sprite.png';
         this.spriteLoaded = false;
         this.spriteAnimation = {
@@ -543,87 +552,26 @@ class FlappyBird {
         // Don't draw anything if sprite isn't loaded
         if (!this.spriteLoaded) return;
         
-        // Replace sky blue background with dungeon background
-        // Draw dark stone wall background
-        const gradient = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height);
-        gradient.addColorStop(0, '#1a1a1a');    // Very dark at top
-        gradient.addColorStop(0.5, '#2d2d2d');  // Slightly lighter in middle
-        gradient.addColorStop(1, '#1a1a1a');    // Dark at bottom
-        
-        this.ctx.fillStyle = gradient;
+        // Clear the canvas
+        this.ctx.fillStyle = '#87CEEB';  // Sky blue fallback
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         
-        // Draw stone wall pattern
-        this.ctx.fillStyle = '#333333';
-        for (let y = 0; y < this.canvas.height; y += 40) {
-            for (let x = 0; x < this.canvas.width; x += 60) {
-                // Draw brick pattern
-                this.ctx.fillRect(x, y, 58, 38);
-                
-                // Add some random darker spots for texture
-                if (Math.random() < 0.3) {
-                    this.ctx.fillStyle = '#2b2b2b';
-                    this.ctx.fillRect(
-                        x + Math.random() * 30,
-                        y + Math.random() * 20,
-                        10,
-                        10
-                    );
-                    this.ctx.fillStyle = '#333333';
-                }
-            }
+        // Draw background image if loaded
+        if (this.backgroundLoaded) {
+            // Draw the background image to fill the canvas while maintaining aspect ratio
+            const scale = Math.max(
+                this.canvas.width / this.backgroundImg.width,
+                this.canvas.height / this.backgroundImg.height
+            );
+            const width = this.backgroundImg.width * scale;
+            const height = this.backgroundImg.height * scale;
+            const x = (this.canvas.width - width) / 2;
+            const y = (this.canvas.height - height) / 2;
+            
+            this.ctx.drawImage(this.backgroundImg, x, y, width, height);
         }
         
-        // Draw wall torches
-        this.background.torches.forEach(torch => {
-            // Draw sconce
-            this.ctx.save();
-            
-            // Draw metal sconce base
-            this.ctx.fillStyle = '#4a4a4a';
-            this.ctx.beginPath();
-            this.ctx.moveTo(torch.x - 12, torch.y);
-            this.ctx.lineTo(torch.x + 12, torch.y);
-            this.ctx.lineTo(torch.x + 8, torch.y + 25);
-            this.ctx.lineTo(torch.x - 8, torch.y + 25);
-            this.ctx.closePath();
-            this.ctx.fill();
-            
-            // Add metallic highlights
-            this.ctx.fillStyle = '#5a5a5a';
-            this.ctx.fillRect(torch.x - 10, torch.y + 2, 20, 3);
-            
-            // Draw torch stick
-            this.ctx.fillStyle = '#654321';
-            this.ctx.fillRect(torch.x - 3, torch.y - 15, 6, 20);
-            
-            // Draw flame with localized glow
-            const time = Date.now() / 1000;
-            const flameY = torch.y - 20 + Math.sin(time + torch.flameOffset) * 1.5; // Reduced movement
-            
-            // Draw glow
-            const gradient = this.ctx.createRadialGradient(
-                torch.x, flameY, 5,
-                torch.x, flameY, 30
-            );
-            gradient.addColorStop(0, 'rgba(255, 68, 0, 0.3)');
-            gradient.addColorStop(1, 'rgba(255, 68, 0, 0)');
-            
-            this.ctx.fillStyle = gradient;
-            this.ctx.beginPath();
-            this.ctx.arc(torch.x, flameY, 30, 0, Math.PI * 2);
-            this.ctx.fill();
-            
-            // Draw flame
-            this.ctx.font = '20px Arial';
-            this.ctx.textAlign = 'center';
-            this.ctx.textBaseline = 'middle';
-            this.ctx.fillText('🔥', torch.x, flameY);
-            
-            this.ctx.restore();
-        });
-        
-        // Only draw the bird and flames if game has started
+        // Only draw the bird and trail if game has started
         if (this.gameStarted) {
             this.ctx.save();
             
