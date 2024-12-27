@@ -1,5 +1,32 @@
 class FlappyBird {
     constructor() {
+        // Add bird sprite image and animation properties
+        this.birdSprite = new Image();
+        this.birdSprite.onload = () => {
+            console.log('Sprite loaded:', this.birdSprite.width, 'x', this.birdSprite.height);
+            this.spriteLoaded = true;
+            // Update frame dimensions based on actual sprite sheet
+            this.spriteAnimation.frameWidth = this.birdSprite.width / this.spriteAnimation.framesPerRow;
+            this.spriteAnimation.frameHeight = this.birdSprite.height / 2; // 2 rows
+            console.log('Frame size:', this.spriteAnimation.frameWidth, 'x', this.spriteAnimation.frameHeight);
+            this.init(); // Initialize game once sprite is loaded
+        };
+        this.birdSprite.onerror = (e) => {
+            console.error('Error loading sprite:', e);
+        };
+        this.birdSprite.src = 'flatchy/flatchy_flap_sprite.png';
+        this.spriteLoaded = false;
+        this.spriteAnimation = {
+            frameWidth: 8,      // Will be updated when sprite loads
+            frameHeight: 8,     // Will be updated when sprite loads
+            totalFrames: 12,    // The sprite sheet shows 12 frames
+            framesPerRow: 6,    // Organized as 2 rows of 6 frames
+            currentFrame: 0,
+            frameTimer: 0,
+            frameInterval: 100,  // Animation speed
+            lastFrameTime: 0
+        };
+        
         // Add starting level configuration
         this.startingLevel = 10; // Can be modified for testing different levels
         this.speedIncreasePerLevel = 0.5; // 50% increase per level, can be modified
@@ -18,7 +45,7 @@ class FlappyBird {
             velocity: 0,
             gravity: 0.2,
             jump: -4.5,
-            size: 24
+            size: 24  // Smaller display size for better visibility
         };
         
         this.baseSpeed = 1.8; // Base speed for pipes and game elements
@@ -141,6 +168,7 @@ class FlappyBird {
     
     bindEvents() {
         const handleInput = () => {
+            if (!this.spriteLoaded) return; // Don't start if sprite isn't loaded
             if (!this.gameStarted) {
                 this.gameStarted = true;
             }
@@ -202,7 +230,7 @@ class FlappyBird {
             velocity: 0,
             gravity: 0.2,
             jump: -4.5,
-            size: 24
+            size: 24  // Match constructor size
         };
         this.pipes = [];
         this.lastPipe = 0;
@@ -232,6 +260,13 @@ class FlappyBird {
     update() {
         if (!this.gameStarted || this.gameOver || this.levelComplete) return;
         
+        // Update sprite animation
+        const currentTime = Date.now();
+        if (currentTime - this.spriteAnimation.lastFrameTime > this.spriteAnimation.frameInterval) {
+            this.spriteAnimation.currentFrame = (this.spriteAnimation.currentFrame + 1) % this.spriteAnimation.totalFrames;
+            this.spriteAnimation.lastFrameTime = currentTime;
+        }
+
         this.bird.velocity += this.bird.gravity;
         this.bird.y += this.bird.velocity;
         
@@ -442,9 +477,6 @@ class FlappyBird {
     startLevel(levelNumber) {
         this.currentLevel = levelNumber;
         
-        // Increase game speed based on speedIncreasePerLevel
-        this.currentSpeed = this.baseSpeed * (1 + (this.currentLevel - 1) * this.speedIncreasePerLevel);
-        
         // Reset game state for new level but keep total points
         this.bird = {
             x: 50,
@@ -452,7 +484,7 @@ class FlappyBird {
             velocity: 0,
             gravity: 0.2,
             jump: -4.5,
-            size: 24
+            size: 24  // Match constructor size
         };
         this.pipes = [];
         this.lastPipe = 0;
@@ -508,6 +540,9 @@ class FlappyBird {
     }
     
     draw() {
+        // Don't draw anything if sprite isn't loaded
+        if (!this.spriteLoaded) return;
+        
         // Replace sky blue background with dungeon background
         // Draw dark stone wall background
         const gradient = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height);
@@ -588,19 +623,19 @@ class FlappyBird {
             this.ctx.restore();
         });
         
-        // Only draw the skull and flames if game has started
+        // Only draw the bird and flames if game has started
         if (this.gameStarted) {
             this.ctx.save();
             
-            // Calculate rotation based on velocity
+            // Calculate rotation based on velocity (reduced rotation amount)
             let rotation = 0;
             if (this.bird.velocity < 0) {
-                rotation = -0.3;
+                rotation = -0.2;  // Reduced from -0.3
             } else if (this.bird.velocity > 0) {
-                rotation = 0.3;
+                rotation = 0.2;   // Reduced from 0.3
             }
             
-            // Draw flames behind skull with rotation
+            // Draw flames behind bird
             this.ctx.save();
             this.ctx.translate(this.bird.x + this.bird.size/2, this.bird.y + this.bird.size/2);
             this.ctx.rotate(rotation);
@@ -609,7 +644,7 @@ class FlappyBird {
             this.ctx.textAlign = 'center';
             this.ctx.textBaseline = 'middle';
             
-            // Largest flame nearest to skull
+            // Largest flame nearest to bird
             this.ctx.font = '18px Arial';
             this.ctx.fillText('🔥', -20, 0);
             
@@ -617,20 +652,35 @@ class FlappyBird {
             this.ctx.font = '14px Arial';
             this.ctx.fillText('🔥', -32, 0);
             
-            // Smallest flame farthest from skull
+            // Smallest flame farthest from bird
             this.ctx.font = '12px Arial';
             this.ctx.fillText('🔥', -42, 0);
             
             this.ctx.restore();
             
-            // Draw skull with same rotation
+            // Draw bird sprite
+            this.ctx.save();
             this.ctx.translate(this.bird.x + this.bird.size/2, this.bird.y + this.bird.size/2);
             this.ctx.rotate(rotation);
-            this.ctx.font = '24px Arial';
-            this.ctx.fillStyle = '#fff';
-            this.ctx.textAlign = 'center';
-            this.ctx.textBaseline = 'middle';
-            this.ctx.fillText('💀', 0, 0);
+            
+            // Calculate the row and column in the sprite sheet
+            const column = this.spriteAnimation.currentFrame % this.spriteAnimation.framesPerRow;
+            const row = Math.floor(this.spriteAnimation.currentFrame / this.spriteAnimation.framesPerRow);
+            
+            // Draw the bird with proper scaling
+            this.ctx.drawImage(
+                this.birdSprite,
+                column * this.spriteAnimation.frameWidth,    // Source X
+                row * this.spriteAnimation.frameHeight,      // Source Y
+                this.spriteAnimation.frameWidth,             // Source width
+                this.spriteAnimation.frameHeight,            // Source height
+                -this.bird.size/2,                          // Destination X
+                -this.bird.size/2,                          // Destination Y
+                this.bird.size,                             // Destination width
+                this.bird.size                              // Destination height
+            );
+            
+            this.ctx.restore();
             this.ctx.restore();
         }
         
