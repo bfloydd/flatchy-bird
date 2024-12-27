@@ -54,7 +54,7 @@ class FlappyBird {
         };
         
         // Add starting level configuration
-        this.startingLevel = 10; // Can be modified for testing different levels
+        this.startingLevel = 3; // Can be modified for testing different levels
         this.speedIncreasePerLevel = 0.5; // 50% increase per level, can be modified
         this.pillarSpaceIncreasePerLevel = .05; // Increase pillar spacing per level
         
@@ -304,6 +304,14 @@ class FlappyBird {
 
         this.bird.velocity += this.bird.gravity;
         this.bird.y += this.bird.velocity;
+        
+        // Check for ground collision
+        const groundHeight = 60;
+        if (this.bird.y + this.bird.size > this.canvas.height - groundHeight) {
+            this.bird.y = this.canvas.height - groundHeight - this.bird.size;
+            this.gameOver = true;
+            return;
+        }
         
         const now = Date.now();
         
@@ -621,9 +629,36 @@ class FlappyBird {
             this.ctx.drawImage(this.backgroundImg, x, y, width, height);
         }
 
-        // Draw scrolling ground
+        // Draw trees before ground
+        const groundHeight = 60;
+        this.pipes.forEach(pipe => {
+            if (this.treeLoaded) {
+                // Draw bottom tree first (it goes behind ground)
+                this.ctx.drawImage(
+                    this.treeImg,
+                    0, 0,
+                    this.treeImg.width, this.treeImg.height,
+                    pipe.x + 1, pipe.y + this.pipeGap,
+                    this.pipeWidth, this.canvas.height - (pipe.y + this.pipeGap)
+                );
+                
+                // Draw top tree (upside down)
+                this.ctx.save();
+                this.ctx.translate(pipe.x + this.pipeWidth/2, pipe.y);
+                this.ctx.scale(1, -1); // Flip vertically
+                this.ctx.drawImage(
+                    this.treeImg,
+                    0, 0,
+                    this.treeImg.width, this.treeImg.height,
+                    -this.pipeWidth/2 + 1, 0,
+                    this.pipeWidth, pipe.y
+                );
+                this.ctx.restore();
+            }
+        });
+
+        // Draw scrolling ground on top of trees
         if (this.groundLoaded) {
-            const groundHeight = 60; // Reduced from 100 to 60 pixels
             const y = this.canvas.height - groundHeight;
             
             // Draw first ground image
@@ -707,43 +742,6 @@ class FlappyBird {
             this.ctx.restore();
             this.ctx.restore();
         }
-        
-        this.ctx.fillStyle = '#2ecc71';
-        this.pipes.forEach(pipe => {
-            if (this.treeLoaded) {
-                // Draw top tree (upside down)
-                this.ctx.save();
-                this.ctx.translate(pipe.x + this.pipeWidth/2, pipe.y);
-                this.ctx.scale(1, -1); // Flip vertically
-                this.ctx.drawImage(
-                    this.treeImg,
-                    0, 0,
-                    this.treeImg.width, this.treeImg.height,  // Use source dimensions
-                    -this.pipeWidth/2 + 1, 0,  // Slight adjustment to center
-                    this.pipeWidth, pipe.y
-                );
-                this.ctx.restore();
-                
-                // Draw bottom tree
-                this.ctx.drawImage(
-                    this.treeImg,
-                    0, 0,
-                    this.treeImg.width, this.treeImg.height,  // Use source dimensions
-                    pipe.x + 1, pipe.y + this.pipeGap,  // Slight adjustment to center
-                    this.pipeWidth, this.canvas.height - (pipe.y + this.pipeGap)
-                );
-            } else {
-                // Fallback rectangle if image not loaded
-                this.ctx.fillStyle = '#2C2F33';
-                this.ctx.fillRect(pipe.x, 0, this.pipeWidth, pipe.y);
-                this.ctx.fillRect(
-                    pipe.x,
-                    pipe.y + this.pipeGap,
-                    this.pipeWidth,
-                    this.canvas.height - (pipe.y + this.pipeGap)
-                );
-            }
-        });
         
         if (this.gameStarted && !this.gameOver) {
             this.ctx.fillStyle = '#fff';
