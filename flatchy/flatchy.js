@@ -388,12 +388,10 @@ class FlappyBird {
         this.bird.velocity += this.bird.gravity;
         this.bird.y += this.bird.velocity;
         
-        // Check for ground collision
-        const groundHeight = 60;
-        if (this.bird.y + this.bird.size > this.canvas.height - groundHeight) {
-            this.bird.y = this.canvas.height - groundHeight - this.bird.size;
+        // Check for ground collision - adjust to match visual ground
+        if (this.bird.y + this.bird.size > this.canvas.height - 50) {  // Adjusted from -20 to -50 for ground height
+            this.bird.y = this.canvas.height - 50 - this.bird.size;  // Keep bird on ground
             this.gameOver = true;
-            return;
         }
         
         const now = Date.now();
