@@ -723,8 +723,16 @@ class FlappyBird {
             this.ctx.rotate(rotation);
             
             // Calculate the row and column in the sprite sheet
-            const column = this.spriteAnimation.currentFrame % this.spriteAnimation.framesPerRow;
-            const row = Math.floor(this.spriteAnimation.currentFrame / this.spriteAnimation.framesPerRow);
+            let column, row;
+            if (this.gameOver) {
+                // Use the final frame (bottom right) for dead bird
+                column = 5;  // Last column (0-based index)
+                row = 1;    // Bottom row (0-based index)
+            } else {
+                // Normal animation frames
+                column = this.spriteAnimation.currentFrame % this.spriteAnimation.framesPerRow;
+                row = Math.floor(this.spriteAnimation.currentFrame / this.spriteAnimation.framesPerRow);
+            }
             
             // Draw the bird with proper scaling
             this.ctx.drawImage(
