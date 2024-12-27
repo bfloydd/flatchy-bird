@@ -79,7 +79,7 @@ class FlappyBird {
         this.currentSpeed = this.baseSpeed * (1 + (this.startingLevel - 1) * this.speedIncreasePerLevel);
         
         this.pipes = [];
-        this.pipeWidth = 50;
+        this.pipeWidth = 60;  // Reduced from 90 to 60 for better tree size
         this.pipeGap = 150;
         this.pipeInterval = 2000;
         this.lastPipe = 0;
@@ -542,26 +542,50 @@ class FlappyBird {
     }
     
     checkCollision(pipe) {
+        // Add minimal padding to make hitbox match the visual tree trunk
+        const hitboxPadding = 8;  // Much smaller padding to prevent going into tree
+        const verticalPadding = 5; // Smaller vertical padding
+        
         const birdBox = {
-            left: this.bird.x,
-            right: this.bird.x + this.bird.size,
-            top: this.bird.y,
-            bottom: this.bird.y + this.bird.size
+            left: this.bird.x + 4,           // Minimal bird padding
+            right: this.bird.x + this.bird.size - 4,
+            top: this.bird.y + 4,
+            bottom: this.bird.y + this.bird.size - 4
         };
         
         const topPipeBox = {
-            left: pipe.x,
-            right: pipe.x + this.pipeWidth,
-            top: 0,
-            bottom: pipe.y
+            left: pipe.x + hitboxPadding,
+            right: pipe.x + this.pipeWidth - hitboxPadding,
+            top: verticalPadding,
+            bottom: pipe.y - verticalPadding
         };
         
         const bottomPipeBox = {
-            left: pipe.x,
-            right: pipe.x + this.pipeWidth,
-            top: pipe.y + this.pipeGap,
-            bottom: this.canvas.height
+            left: pipe.x + hitboxPadding,
+            right: pipe.x + this.pipeWidth - hitboxPadding,
+            top: pipe.y + this.pipeGap + verticalPadding,
+            bottom: this.canvas.height - verticalPadding
         };
+
+        // Debug visualization of hitboxes
+        if (this.gameStarted) {
+            this.ctx.strokeStyle = 'rgba(255, 0, 0, 0.5)';
+            this.ctx.lineWidth = 2;
+            
+            // Draw bird hitbox
+            this.ctx.strokeRect(birdBox.left, birdBox.top, 
+                              birdBox.right - birdBox.left, 
+                              birdBox.bottom - birdBox.top);
+            
+            // Draw pipe hitboxes
+            this.ctx.strokeRect(topPipeBox.left, topPipeBox.top,
+                              topPipeBox.right - topPipeBox.left,
+                              topPipeBox.bottom - topPipeBox.top);
+            
+            this.ctx.strokeRect(bottomPipeBox.left, bottomPipeBox.top,
+                              bottomPipeBox.right - bottomPipeBox.left,
+                              bottomPipeBox.bottom - bottomPipeBox.top);
+        }
         
         return this.checkBoxCollision(birdBox, topPipeBox) || 
                this.checkBoxCollision(birdBox, bottomPipeBox);
@@ -693,7 +717,9 @@ class FlappyBird {
                 this.ctx.scale(1, -1); // Flip vertically
                 this.ctx.drawImage(
                     this.treeImg,
-                    -this.pipeWidth/2, 0,
+                    0, 0,
+                    this.treeImg.width, this.treeImg.height,  // Use source dimensions
+                    -this.pipeWidth/2 + 1, 0,  // Slight adjustment to center
                     this.pipeWidth, pipe.y
                 );
                 this.ctx.restore();
@@ -701,7 +727,9 @@ class FlappyBird {
                 // Draw bottom tree
                 this.ctx.drawImage(
                     this.treeImg,
-                    pipe.x, pipe.y + this.pipeGap,
+                    0, 0,
+                    this.treeImg.width, this.treeImg.height,  // Use source dimensions
+                    pipe.x + 1, pipe.y + this.pipeGap,  // Slight adjustment to center
                     this.pipeWidth, this.canvas.height - (pipe.y + this.pipeGap)
                 );
             } else {
@@ -824,7 +852,7 @@ class FlappyBird {
             
             // Add flame and skull decorations
             this.ctx.font = '30px Arial';
-            this.ctx.fillText('🔥 💀 🔥', this.canvas.width / 2, this.canvas.height / 3 + 60);
+            this.ctx.fillText('💀 💀 🔥', this.canvas.width / 2, this.canvas.height / 3 + 60);
             
             this.ctx.restore();
             
