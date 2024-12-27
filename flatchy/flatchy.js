@@ -635,26 +635,32 @@ class FlappyBird {
                 rotation = 0.2;   // Reduced from 0.3
             }
             
-            // Draw flames behind bird
+            // Draw trail behind bird
             this.ctx.save();
             this.ctx.translate(this.bird.x + this.bird.size/2, this.bird.y + this.bird.size/2);
             this.ctx.rotate(rotation);
             
-            // Draw three flames in a horizontal line with decreasing sizes
+            // Draw three skulls in a trail with decreasing sizes and opacity
             this.ctx.textAlign = 'center';
             this.ctx.textBaseline = 'middle';
             
-            // Largest flame nearest to bird
-            this.ctx.font = '18px Arial';
-            this.ctx.fillText('🔥', -20, 0);
+            // Largest skull nearest to bird
+            this.ctx.globalAlpha = 0.8;
+            this.ctx.font = '20px Arial';
+            this.ctx.fillText('💀', -20, 0);
             
-            // Medium flame in middle
-            this.ctx.font = '14px Arial';
-            this.ctx.fillText('🔥', -32, 0);
+            // Medium skull in middle
+            this.ctx.globalAlpha = 0.6;
+            this.ctx.font = '16px Arial';
+            this.ctx.fillText('💀', -35, 0);
             
-            // Smallest flame farthest from bird
+            // Smallest skull farthest from bird
+            this.ctx.globalAlpha = 0.4;
             this.ctx.font = '12px Arial';
-            this.ctx.fillText('🔥', -42, 0);
+            this.ctx.fillText('💀', -48, 0);
+            
+            // Reset opacity
+            this.ctx.globalAlpha = 1.0;
             
             this.ctx.restore();
             
