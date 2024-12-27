@@ -627,12 +627,12 @@ class FlappyBird {
         const hitboxPadding = 8;  // Much smaller padding to prevent going into tree
         const verticalPadding = 5; // Smaller vertical padding
         
-        // Adjust bird hitbox to match actual bird position, not including trail
+        // Adjust bird hitbox to be a moderate size that matches the bird's body
         const birdBox = {
-            left: this.bird.x + this.bird.size/4,     // Move hitbox right to match actual bird
-            right: this.bird.x + this.bird.size - 4,
-            top: this.bird.y + 4,
-            bottom: this.bird.y + this.bird.size - 4
+            left: this.bird.x + this.bird.size/3,     // Move hitbox right to match actual bird body
+            right: this.bird.x + this.bird.size/1.2,  // Cover most of the bird's width
+            top: this.bird.y + this.bird.size/4,      // Start a bit higher
+            bottom: this.bird.y + this.bird.size/1.3   // Cover most of the bird's height
         };
         
         const topPipeBox = {
