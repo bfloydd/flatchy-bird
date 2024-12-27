@@ -127,7 +127,7 @@ class FlappyBird {
         // Add start button
         this.startButton = {
             x: this.canvas.width / 2 - 100,
-            y: this.canvas.height / 2 + 20,
+            y: this.canvas.height / 2 + 30,
             width: 200,
             height: 50
         };
@@ -135,7 +135,7 @@ class FlappyBird {
         // Add restart button
         this.restartButton = {
             x: this.canvas.width / 2 - 100,
-            y: this.canvas.height / 2 + 20,
+            y: this.canvas.height / 2 + 30,
             width: 200,
             height: 50
         };
@@ -901,7 +901,7 @@ class FlappyBird {
                 this.restartButton.width = btnWidth;
                 this.restartButton.height = btnHeight;
                 this.restartButton.x = (this.canvas.width - btnWidth) / 2;
-                this.restartButton.y = this.canvas.height / 2 + 20;  // Changed from +50 to +20
+                this.restartButton.y = this.canvas.height / 2 + 30;  // Changed from +20 to +30
                 
                 // Draw the button image
                 this.ctx.drawImage(
@@ -954,7 +954,7 @@ class FlappyBird {
                 this.startButton.width = btnWidth;
                 this.startButton.height = btnHeight;
                 this.startButton.x = (this.canvas.width - btnWidth) / 2;
-                this.startButton.y = this.canvas.height / 2 + 20;  // Changed from +50 to +20
+                this.startButton.y = this.canvas.height / 2 + 30;  // Changed from +20 to +30
                 
                 this.ctx.drawImage(
                     this.startBtnImg,
