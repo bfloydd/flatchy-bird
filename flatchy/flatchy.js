@@ -32,6 +32,14 @@ class FlappyBird {
         this.groundLoaded = false;
         this.groundOffset = 0;  // For scrolling effect
 
+        // Add tree image for obstacles
+        this.treeImg = new Image();
+        this.treeImg.onload = () => {
+            this.treeLoaded = true;
+        };
+        this.treeImg.src = 'flatchy/tree.png';
+        this.treeLoaded = false;
+
         this.birdSprite.src = 'flatchy/flatchy_flap_sprite.png';
         this.spriteLoaded = false;
         this.spriteAnimation = {
@@ -678,59 +686,35 @@ class FlappyBird {
         
         this.ctx.fillStyle = '#2ecc71';
         this.pipes.forEach(pipe => {
-            // Dark stone color for main pillar
-            this.ctx.fillStyle = '#2C2F33';  // Dark slate color
-            
-            // Draw main pillars
-            this.ctx.fillRect(pipe.x, 0, this.pipeWidth, pipe.y);
-            this.ctx.fillRect(
-                pipe.x,
-                pipe.y + this.pipeGap,
-                this.pipeWidth,
-                this.canvas.height - (pipe.y + this.pipeGap)
-            );
-            
-            // Add stone texture and highlights
-            this.ctx.fillStyle = '#23272A';  // Darker shade for depth
-            for (let i = 0; i < pipe.y; i += 40) {
-                this.ctx.fillRect(pipe.x, i, this.pipeWidth, 2);  // Horizontal stone lines
+            if (this.treeLoaded) {
+                // Draw top tree (upside down)
+                this.ctx.save();
+                this.ctx.translate(pipe.x + this.pipeWidth/2, pipe.y);
+                this.ctx.scale(1, -1); // Flip vertically
+                this.ctx.drawImage(
+                    this.treeImg,
+                    -this.pipeWidth/2, 0,
+                    this.pipeWidth, pipe.y
+                );
+                this.ctx.restore();
+                
+                // Draw bottom tree
+                this.ctx.drawImage(
+                    this.treeImg,
+                    pipe.x, pipe.y + this.pipeGap,
+                    this.pipeWidth, this.canvas.height - (pipe.y + this.pipeGap)
+                );
+            } else {
+                // Fallback rectangle if image not loaded
+                this.ctx.fillStyle = '#2C2F33';
+                this.ctx.fillRect(pipe.x, 0, this.pipeWidth, pipe.y);
+                this.ctx.fillRect(
+                    pipe.x,
+                    pipe.y + this.pipeGap,
+                    this.pipeWidth,
+                    this.canvas.height - (pipe.y + this.pipeGap)
+                );
             }
-            for (let i = pipe.y + this.pipeGap; i < this.canvas.height; i += 40) {
-                this.ctx.fillRect(pipe.x, i, this.pipeWidth, 2);
-            }
-            
-            // Add stone brick pattern
-            this.ctx.fillStyle = '#202225';  // Even darker for cracks
-            for (let i = 0; i < pipe.y; i += 80) {
-                this.ctx.fillRect(pipe.x + this.pipeWidth/3, i, 2, 40);  // Vertical cracks
-                this.ctx.fillRect(pipe.x + (this.pipeWidth*2/3), i + 40, 2, 40);
-            }
-            for (let i = pipe.y + this.pipeGap; i < this.canvas.height; i += 80) {
-                this.ctx.fillRect(pipe.x + this.pipeWidth/3, i, 2, 40);
-                this.ctx.fillRect(pipe.x + (this.pipeWidth*2/3), i + 40, 2, 40);
-            }
-            
-            // Add chains on the sides
-            this.ctx.fillStyle = '#4A4D50';  // Metal color
-            // Left chain
-            for (let i = 0; i < pipe.y; i += 20) {
-                this.ctx.fillRect(pipe.x - 8, i, 4, 10);  // Chain links
-            }
-            for (let i = pipe.y + this.pipeGap; i < this.canvas.height; i += 20) {
-                this.ctx.fillRect(pipe.x - 8, i, 4, 10);
-            }
-            // Right chain
-            for (let i = 10; i < pipe.y; i += 20) {
-                this.ctx.fillRect(pipe.x + this.pipeWidth + 4, i, 4, 10);
-            }
-            for (let i = pipe.y + this.pipeGap + 10; i < this.canvas.height; i += 20) {
-                this.ctx.fillRect(pipe.x + this.pipeWidth + 4, i, 4, 10);
-            }
-            
-            // Add highlights
-            this.ctx.fillStyle = '#36393F';  // Lighter shade for edge highlight
-            this.ctx.fillRect(pipe.x, 0, 3, pipe.y);
-            this.ctx.fillRect(pipe.x, pipe.y + this.pipeGap, 3, this.canvas.height - (pipe.y + this.pipeGap));
         });
         
         if (this.gameStarted && !this.gameOver) {
