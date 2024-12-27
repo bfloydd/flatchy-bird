@@ -1,5 +1,8 @@
 class FlappyBird {
     constructor() {
+        // Define font style for consistent use throughout
+        this.gameFont = '"Chalkboard SE", "Comic Sans MS", cursive';
+        
         // Add bird sprite image and animation properties
         this.birdSprite = new Image();
         this.birdSprite.onload = () => {
@@ -813,7 +816,7 @@ class FlappyBird {
         
         if (this.gameStarted && !this.gameOver) {
             this.ctx.fillStyle = '#fff';
-            this.ctx.font = 'bold 32px "Comic Sans MS", cursive';
+            this.ctx.font = `bold 32px ${this.gameFont}`;
             this.ctx.textAlign = 'center';
             this.ctx.strokeStyle = '#000';
             this.ctx.lineWidth = 4;
@@ -822,7 +825,7 @@ class FlappyBird {
 
             // Draw level counter in top right
             this.ctx.textAlign = 'right';
-            this.ctx.font = 'bold 24px "Comic Sans MS", cursive';
+            this.ctx.font = `bold 24px ${this.gameFont}`;
             this.ctx.strokeText(`Level ${this.currentLevel}`, this.canvas.width - 20, 40);
             this.ctx.fillText(`Level ${this.currentLevel}`, this.canvas.width - 20, 40);
 
@@ -855,7 +858,7 @@ class FlappyBird {
             this.ctx.fillStyle = '#FFFFFF';
             this.ctx.strokeStyle = '#000000';
             this.ctx.lineWidth = 3;
-            this.ctx.font = 'bold 36px "Comic Sans MS", cursive';  // More playful font to match
+            this.ctx.font = `bold 36px ${this.gameFont}`;
             this.ctx.textAlign = 'center';
             this.ctx.strokeText(`Score: ${this.score}`, this.canvas.width / 2, this.canvas.height / 3 + 100);  // Moved up
             this.ctx.fillText(`Score: ${this.score}`, this.canvas.width / 2, this.canvas.height / 3 + 100);  // Moved up
@@ -888,14 +891,14 @@ class FlappyBird {
             
             // Red layer
             this.ctx.fillStyle = '#FF0000';
-            this.ctx.font = 'bold 43px "Comic Sans MS", cursive';
+            this.ctx.font = `bold 43px ${this.gameFont}`;
             this.ctx.textAlign = 'center';
             this.ctx.fillText('FLAMING', this.canvas.width / 2 + glitchOffset, this.canvas.height / 3 - 40);
             this.ctx.fillText('BIRD SKULL', this.canvas.width / 2 + glitchOffset, this.canvas.height / 3 + 10);
             
             // Main layer
             this.ctx.fillStyle = '#FFF';
-            this.ctx.font = 'bold 42px "Comic Sans MS", cursive';
+            this.ctx.font = `bold 42px ${this.gameFont}`;
             this.ctx.fillText('FLAMING', this.canvas.width / 2, this.canvas.height / 3 - 40);
             this.ctx.fillText('BIRD SKULL', this.canvas.width / 2, this.canvas.height / 3 + 10);
             
@@ -961,7 +964,7 @@ class FlappyBird {
             
             // Draw text with glow
             this.ctx.fillStyle = '#fff';
-            this.ctx.font = 'bold 24px "Comic Sans MS", cursive';
+            this.ctx.font = `bold 24px ${this.gameFont}`;
             this.ctx.textAlign = 'center';
             this.ctx.textBaseline = 'middle';
             this.ctx.fillText(
@@ -976,14 +979,14 @@ class FlappyBird {
         // Draw all bosses and their projectiles
         this.bosses.forEach(boss => {
             // Draw boss
-            this.ctx.font = `${boss.type.size}px "Comic Sans MS", cursive`;
+            this.ctx.font = `${boss.type.size}px ${this.gameFont}`;
             this.ctx.textAlign = 'center';
             this.ctx.textBaseline = 'middle';
             this.ctx.fillText(boss.type.emoji, boss.x, boss.y);
             
             // Draw projectiles
             boss.projectiles.forEach(projectile => {
-                this.ctx.font = `${projectile.size}px "Comic Sans MS", cursive`;
+                this.ctx.font = `${projectile.size}px ${this.gameFont}`;
                 this.ctx.fillText(projectile.emoji, projectile.x, projectile.y);
             });
         });
@@ -1007,7 +1010,7 @@ class FlappyBird {
             
             // Add dripping blood effect
             const bloodDrops = '🩸'.repeat(15);
-            this.ctx.font = '20px "Comic Sans MS", cursive';
+            this.ctx.font = `20px ${this.gameFont}`;
             this.ctx.fillStyle = '#FF0000';
             this.ctx.textAlign = 'center';
             this.ctx.fillText(bloodDrops, this.canvas.width / 2, 30);
@@ -1023,12 +1026,12 @@ class FlappyBird {
             
             // Red layer
             this.ctx.fillStyle = '#FF0000';
-            this.ctx.font = 'bold 52px "Comic Sans MS", cursive';
+            this.ctx.font = `bold 52px ${this.gameFont}`;
             this.ctx.fillText(`LEVEL ${this.currentLevel}`, this.canvas.width / 2 + glitchOffset, this.canvas.height / 3 - 40);
             
             // Main layer
             this.ctx.fillStyle = '#FFF';
-            this.ctx.font = 'bold 48px "Comic Sans MS", cursive';
+            this.ctx.font = `bold 48px ${this.gameFont}`;
             this.ctx.fillText(`LEVEL ${this.currentLevel}`, this.canvas.width / 2, this.canvas.height / 3 - 40);
             
             // Complete text with skull decorations
@@ -1084,7 +1087,7 @@ class FlappyBird {
         
         // Draw text with glow
         this.ctx.fillStyle = '#fff';
-        this.ctx.font = 'bold 24px "Comic Sans MS", cursive';
+        this.ctx.font = `bold 24px ${this.gameFont}`;
         this.ctx.textAlign = 'center';
         this.ctx.textBaseline = 'middle';
         this.ctx.fillText(text, x + width/2, y + height/2);
