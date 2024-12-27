@@ -907,8 +907,8 @@ class FlappyBird {
                 this.ctx.textBaseline = 'middle';
                 this.ctx.fillText(
                     'Try again',
-                    this.restartButton.x + btnWidth/2,
-                    this.restartButton.y + btnHeight/2
+                    this.restartButton.x + (btnWidth/2),
+                    this.restartButton.y + (btnHeight/2) + 2  // Move down by adding 2 pixels instead of subtracting
                 );
             }
         }
