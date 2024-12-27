@@ -40,6 +40,36 @@ class FlappyBird {
         this.treeImg.src = 'flatchy/tree.png';
         this.treeLoaded = false;
 
+        // Add feather images for trail effect
+        this.feather1 = new Image();
+        this.feather1.onload = () => {
+            this.feather1Loaded = true;
+        };
+        this.feather1.src = 'flatchy/feather_1.png';
+        this.feather1Loaded = false;
+
+        this.feather2 = new Image();
+        this.feather2.onload = () => {
+            this.feather2Loaded = true;
+        };
+        this.feather2.src = 'flatchy/feather_2.png';
+        this.feather2Loaded = false;
+
+        this.feather3 = new Image();
+        this.feather3.onload = () => {
+            this.feather3Loaded = true;
+        };
+        this.feather3.src = 'flatchy/feather_3.png';
+        this.feather3Loaded = false;
+
+        // Add fourth feather
+        this.feather4 = new Image();
+        this.feather4.onload = () => {
+            this.feather4Loaded = true;
+        };
+        this.feather4.src = 'flatchy/feather_4.png';
+        this.feather4Loaded = false;
+
         this.birdSprite.src = 'flatchy/flatchy_flap_sprite.png';
         this.spriteLoaded = false;
         this.spriteAnimation = {
@@ -693,24 +723,46 @@ class FlappyBird {
             this.ctx.translate(this.bird.x + this.bird.size/2, this.bird.y + this.bird.size/2);
             this.ctx.rotate(rotation);
             
-            // Draw three skulls in a trail with decreasing sizes and opacity
-            this.ctx.textAlign = 'center';
-            this.ctx.textBaseline = 'middle';
+            // Draw three feathers in a trail with decreasing sizes and opacity
+            // Largest feather nearest to bird
+            if (this.feather1Loaded) {
+                this.ctx.globalAlpha = 0.8;
+                this.ctx.drawImage(
+                    this.feather1,
+                    -15 - this.bird.size/3, -this.bird.size/3,
+                    this.bird.size/2.2, this.bird.size/2.2      // Smaller size
+                );
+            }
             
-            // Largest skull nearest to bird
-            this.ctx.globalAlpha = 0.8;
-            this.ctx.font = '20px Arial';
-            this.ctx.fillText('💀', -20, 0);
+            // Medium feather in middle
+            if (this.feather2Loaded) {
+                this.ctx.globalAlpha = 0.6;
+                this.ctx.drawImage(
+                    this.feather2,
+                    -35 - this.bird.size/3, -this.bird.size/3,
+                    this.bird.size/2.5, this.bird.size/2.5      // Smaller size
+                );
+            }
             
-            // Medium skull in middle
-            this.ctx.globalAlpha = 0.6;
-            this.ctx.font = '16px Arial';
-            this.ctx.fillText('💀', -35, 0);
-            
-            // Smallest skull farthest from bird
-            this.ctx.globalAlpha = 0.4;
-            this.ctx.font = '12px Arial';
-            this.ctx.fillText('💀', -48, 0);
+            // Smaller feather
+            if (this.feather3Loaded) {
+                this.ctx.globalAlpha = 0.4;
+                this.ctx.drawImage(
+                    this.feather3,
+                    -55 - this.bird.size/3, -this.bird.size/3,
+                    this.bird.size/2.8, this.bird.size/2.8      // Smaller size
+                );
+            }
+
+            // Smallest feather farthest from bird
+            if (this.feather4Loaded) {
+                this.ctx.globalAlpha = 0.2;
+                this.ctx.drawImage(
+                    this.feather4,
+                    -75 - this.bird.size/3, -this.bird.size/3,
+                    this.bird.size/3.1, this.bird.size/3.1      // Smaller size
+                );
+            }
             
             // Reset opacity
             this.ctx.globalAlpha = 1.0;
