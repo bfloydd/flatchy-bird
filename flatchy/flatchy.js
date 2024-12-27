@@ -45,7 +45,7 @@ class FlappyBird {
         this.spriteAnimation = {
             frameWidth: 8,      // Will be updated when sprite loads
             frameHeight: 8,     // Will be updated when sprite loads
-            totalFrames: 12,    // The sprite sheet shows 12 frames
+            totalFrames: 11,    // Changed from 12 to 11 to skip last frame
             framesPerRow: 6,    // Organized as 2 rows of 6 frames
             currentFrame: 0,
             frameTimer: 0,
