@@ -220,6 +220,22 @@ class FlappyBird {
         this.gameOverImg.src = 'flatchy/game_over_text.png';
         this.gameOverImgLoaded = false;
         
+        // Add start button image
+        this.startBtnImg = new Image();
+        this.startBtnImg.onload = () => {
+            this.startBtnLoaded = true;
+        };
+        this.startBtnImg.src = 'flatchy/start_btn_up.png';
+        this.startBtnLoaded = false;
+        
+        // Add plain button image for restart
+        this.plainBtnImg = new Image();
+        this.plainBtnImg.onload = () => {
+            this.plainBtnLoaded = true;
+        };
+        this.plainBtnImg.src = 'flatchy/plain_btn.png';
+        this.plainBtnLoaded = false;
+        
         this.gameLoopStarted = false;  // Add flag to track if game loop is running
         this.bindEvents();
     }
@@ -860,17 +876,41 @@ class FlappyBird {
             this.ctx.lineWidth = 3;
             this.ctx.font = `bold 36px ${this.gameFont}`;
             this.ctx.textAlign = 'center';
-            this.ctx.strokeText(`Score: ${this.score}`, this.canvas.width / 2, this.canvas.height / 3 + 60);  // Moved up from +100
-            this.ctx.fillText(`Score: ${this.score}`, this.canvas.width / 2, this.canvas.height / 3 + 60);  // Moved up from +100
+            this.ctx.strokeText(`Score: ${this.score}`, this.canvas.width / 2, this.canvas.height / 3 + 60);
+            this.ctx.fillText(`Score: ${this.score}`, this.canvas.width / 2, this.canvas.height / 3 + 60);
             
-            // Draw restart button with spooky styling
-            this.drawDungeonButton(
-                this.restartButton.x,
-                this.restartButton.y,
-                this.restartButton.width,
-                this.restartButton.height,
-                'Restart'
-            );
+            // Draw restart button using plain button image
+            if (this.plainBtnLoaded) {
+                const btnWidth = 200;  // Match current button width
+                const aspectRatio = this.plainBtnImg.height / this.plainBtnImg.width;
+                const btnHeight = btnWidth * aspectRatio;
+                
+                // Update button hitbox to match image
+                this.restartButton.width = btnWidth;
+                this.restartButton.height = btnHeight;
+                this.restartButton.x = (this.canvas.width - btnWidth) / 2;
+                this.restartButton.y = this.canvas.height / 2 + 50;  // Keep same vertical position
+                
+                // Draw the button image
+                this.ctx.drawImage(
+                    this.plainBtnImg,
+                    this.restartButton.x,
+                    this.restartButton.y,
+                    btnWidth,
+                    btnHeight
+                );
+
+                // Add centered text on the button
+                this.ctx.fillStyle = '#000000';  // Black text
+                this.ctx.font = `bold 24px ${this.gameFont}`;
+                this.ctx.textAlign = 'center';
+                this.ctx.textBaseline = 'middle';
+                this.ctx.fillText(
+                    'Try again',
+                    this.restartButton.x + btnWidth/2,
+                    this.restartButton.y + btnHeight/2
+                );
+            }
         }
         
         if (!this.gameStarted) {
@@ -908,72 +948,26 @@ class FlappyBird {
             
             this.ctx.restore();
             
-            // Draw start button with dungeon styling
-            this.ctx.save();
-            
-            // Add glow effect
-            this.ctx.shadowColor = '#ff4400';
-            this.ctx.shadowBlur = 20;
-            
-            // Draw stone button background
-            this.ctx.fillStyle = '#2C2F33';  // Dark slate color (matching pillars)
-            this.ctx.fillRect(
-                this.startButton.x,
-                this.startButton.y,
-                this.startButton.width,
-                this.startButton.height
-            );
-            
-            // Add stone texture
-            this.ctx.fillStyle = '#23272A';  // Darker shade for depth
-            for (let i = 0; i < this.startButton.width; i += 20) {
-                this.ctx.fillRect(
-                    this.startButton.x + i,
+            // Draw start button image
+            if (this.startBtnLoaded) {
+                const btnWidth = 200;  // Match current button width
+                const aspectRatio = this.startBtnImg.height / this.startBtnImg.width;
+                const btnHeight = btnWidth * aspectRatio;
+                
+                // Update button hitbox to match image
+                this.startButton.width = btnWidth;
+                this.startButton.height = btnHeight;
+                this.startButton.x = (this.canvas.width - btnWidth) / 2;
+                this.startButton.y = this.canvas.height / 2 + 50;  // Keep same vertical position
+                
+                this.ctx.drawImage(
+                    this.startBtnImg,
+                    this.startButton.x,
                     this.startButton.y,
-                    2,
-                    this.startButton.height
+                    btnWidth,
+                    btnHeight
                 );
             }
-            
-            // Add metallic border
-            this.ctx.fillStyle = '#4A4D50';
-            this.ctx.fillRect(
-                this.startButton.x - 2,
-                this.startButton.y - 2,
-                this.startButton.width + 4,
-                4
-            );
-            this.ctx.fillRect(
-                this.startButton.x - 2,
-                this.startButton.y + this.startButton.height - 2,
-                this.startButton.width + 4,
-                4
-            );
-            this.ctx.fillRect(
-                this.startButton.x - 2,
-                this.startButton.y,
-                4,
-                this.startButton.height
-            );
-            this.ctx.fillRect(
-                this.startButton.x + this.startButton.width - 2,
-                this.startButton.y,
-                4,
-                this.startButton.height
-            );
-            
-            // Draw text with glow
-            this.ctx.fillStyle = '#fff';
-            this.ctx.font = `bold 24px ${this.gameFont}`;
-            this.ctx.textAlign = 'center';
-            this.ctx.textBaseline = 'middle';
-            this.ctx.fillText(
-                'Start',  // Changed from 'Enter Dungeon' back to 'Start'
-                this.canvas.width / 2,
-                this.startButton.y + this.startButton.height/2
-            );
-            
-            this.ctx.restore();
         }
         
         // Draw all bosses and their projectiles
