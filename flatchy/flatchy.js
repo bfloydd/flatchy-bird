@@ -45,7 +45,7 @@ class FlappyBird {
             velocity: 0,
             gravity: 0.2,
             jump: -4.5,
-            size: 24  // Smaller display size for better visibility
+            size: 48  // Increased from 24 to 48 for better visibility
         };
         
         this.baseSpeed = 1.8; // Base speed for pipes and game elements
@@ -230,7 +230,7 @@ class FlappyBird {
             velocity: 0,
             gravity: 0.2,
             jump: -4.5,
-            size: 24  // Match constructor size
+            size: 48  // Match constructor size
         };
         this.pipes = [];
         this.lastPipe = 0;
@@ -484,7 +484,7 @@ class FlappyBird {
             velocity: 0,
             gravity: 0.2,
             jump: -4.5,
-            size: 24  // Match constructor size
+            size: 48  // Match constructor size
         };
         this.pipes = [];
         this.lastPipe = 0;
