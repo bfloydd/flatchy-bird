@@ -117,8 +117,8 @@ class FlappyBird {
         this.pipeInterval = 2000;
         this.lastPipe = 0;
         
-        this.score = 0;
-        this.totalPoints = 0;  // Track total points across all levels
+        this.score = 0;        // Running total across all levels
+        this.levelScore = 0;   // Score for current level only
         this.gameStarted = false;
         this.gameOver = false;
         
@@ -297,12 +297,12 @@ class FlappyBird {
             velocity: 0,
             gravity: 0.2,
             jump: -4.5,
-            size: 48  // Match constructor size
+            size: 48
         };
         this.pipes = [];
         this.lastPipe = 0;
-        this.score = 0;
-        this.totalPoints = 0;  // Reset total points on full restart
+        this.score = 0;        // Reset total score on full restart
+        this.levelScore = 0;   // Reset level score
         this.gameStarted = false;
         this.gameOver = false;
         
@@ -311,10 +311,10 @@ class FlappyBird {
         
         this.levelComplete = false;
         
-        // Reset to starting level first
+        // Reset to starting level
         this.currentLevel = this.startingLevel;
         
-        // Then set speed based on the starting level
+        // Set speed based on the starting level
         this.currentSpeed = this.baseSpeed * (1 + (this.startingLevel - 1) * this.speedIncreasePerLevel);
         
         this.background.torches.forEach(torch => {
@@ -363,7 +363,7 @@ class FlappyBird {
         const adjustedPipeInterval = 2000 / (1 + (this.currentLevel - 1) * this.pillarSpaceIncreasePerLevel);
         
         // Only generate new pipes if we need more to reach 10 points
-        if (now - this.lastPipe > adjustedPipeInterval && (unscoredPipes + this.score) < 10) {
+        if (now - this.lastPipe > adjustedPipeInterval && (unscoredPipes + this.levelScore) < 10) {
             const pipeY = Math.random() * (this.canvas.height - this.pipeGap - 100) + 50;
             this.pipes.push({
                 x: this.canvas.width,
@@ -382,12 +382,12 @@ class FlappyBird {
             }
             
             if (!pipe.scored && pipe.x + this.pipeWidth < this.bird.x) {
-                this.score++;
-                this.totalPoints++;  // Increment total points when scoring
+                this.score++;      // Increment total score
+                this.levelScore++; // Increment level score
                 pipe.scored = true;
 
-                // Spawn boss when reaching 5 points if it hasn't appeared yet
-                if (this.score === 5 && !this.bossHasAppeared) {
+                // Spawn boss when reaching 5 points in current level
+                if (this.levelScore === 5 && !this.bossHasAppeared) {
                     const bossTypes = [this.bossTypes.GHOST, this.bossTypes.DEMON, this.bossTypes.SKULL];
                     const bossIndex = (this.currentLevel - 1) % bossTypes.length;
                     const bossType = bossTypes[bossIndex];
@@ -539,8 +539,8 @@ class FlappyBird {
             );
         });
         
-        // Check for level completion
-        if (this.score >= 10) {
+        // Check for level completion using levelScore
+        if (this.levelScore >= 10) {
             if (!this.levelComplete) {
                 this.levelComplete = true;
                 this.flashEffect.active = true;
@@ -560,32 +560,29 @@ class FlappyBird {
     // Add new method for level management with infinite progression
     startLevel(levelNumber) {
         this.currentLevel = levelNumber;
+        this.levelScore = 0;   // Reset level score but keep total score
         
-        // Reset game state for new level but keep total points
+        // Reset game state for new level
         this.bird = {
             x: 50,
             y: 200,
             velocity: 0,
             gravity: 0.2,
             jump: -4.5,
-            size: 48  // Match constructor size
+            size: 48
         };
         this.pipes = [];
         this.lastPipe = 0;
-        this.score = 0;  // Reset level score only
         this.gameStarted = true;
         this.gameOver = false;
         this.levelComplete = false;
         
-        // Clear existing bosses and reset boss appearance flag
         this.bosses = [];
         this.bossHasAppeared = false;
         
-        // Reset flash effect
         this.flashEffect.active = false;
         this.flashEffect.currentFrame = 0;
         
-        // Start the game loop
         cancelAnimationFrame(this.animationFrame);
         this.gameLoop();
     }
@@ -815,24 +812,19 @@ class FlappyBird {
         }
         
         if (this.gameStarted && !this.gameOver) {
+            // Draw level counter in top right
             this.ctx.fillStyle = '#fff';
-            this.ctx.font = `bold 32px ${this.gameFont}`;
-            this.ctx.textAlign = 'center';
+            this.ctx.font = `bold 24px ${this.gameFont}`;
+            this.ctx.textAlign = 'right';
             this.ctx.strokeStyle = '#000';
             this.ctx.lineWidth = 4;
-            this.ctx.strokeText(`${this.score}`, this.canvas.width / 2, 50);
-            this.ctx.fillText(`${this.score}`, this.canvas.width / 2, 50);
-
-            // Draw level counter in top right
-            this.ctx.textAlign = 'right';
-            this.ctx.font = `bold 24px ${this.gameFont}`;
             this.ctx.strokeText(`Level ${this.currentLevel}`, this.canvas.width - 20, 40);
             this.ctx.fillText(`Level ${this.currentLevel}`, this.canvas.width - 20, 40);
 
-            // Draw total points in top left
+            // Draw score in top left
             this.ctx.textAlign = 'left';
-            this.ctx.strokeText(`Total: ${this.totalPoints}`, 20, 40);
-            this.ctx.fillText(`Total: ${this.totalPoints}`, 20, 40);
+            this.ctx.strokeText(`Score: ${this.score}`, 20, 40);
+            this.ctx.fillText(`Score: ${this.score}`, 20, 40);
         }
         
         if (this.gameOver) {
