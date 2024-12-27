@@ -1,7 +1,7 @@
 class FlappyBird {
     constructor() {
         // Define font style for consistent use throughout
-        this.gameFont = '"Chalkboard SE", "Comic Sans MS", cursive';
+        this.gameFont = '"Chalkboard SE", cursive';
         
         // Add bird sprite image and animation properties
         this.birdSprite = new Image();
