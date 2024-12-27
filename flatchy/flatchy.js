@@ -860,8 +860,8 @@ class FlappyBird {
             this.ctx.lineWidth = 3;
             this.ctx.font = `bold 36px ${this.gameFont}`;
             this.ctx.textAlign = 'center';
-            this.ctx.strokeText(`Score: ${this.score}`, this.canvas.width / 2, this.canvas.height / 3 + 100);  // Moved up
-            this.ctx.fillText(`Score: ${this.score}`, this.canvas.width / 2, this.canvas.height / 3 + 100);  // Moved up
+            this.ctx.strokeText(`Score: ${this.score}`, this.canvas.width / 2, this.canvas.height / 3 + 60);  // Moved up from +100
+            this.ctx.fillText(`Score: ${this.score}`, this.canvas.width / 2, this.canvas.height / 3 + 60);  // Moved up from +100
             
             // Draw restart button with spooky styling
             this.drawDungeonButton(
