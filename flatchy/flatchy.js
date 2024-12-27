@@ -246,6 +246,18 @@ class FlappyBird {
         
         this.gameLoopStarted = false;  // Add flag to track if game loop is running
         this.bindEvents();
+
+        // Add cloud images
+        this.clouds = [];
+        for (let i = 1; i <= 4; i++) {
+            const cloud = new Image();
+            cloud.onload = () => {
+                cloud.loaded = true;
+            };
+            cloud.src = `flatchy/cloud_0${i}.png`;
+            cloud.loaded = false;
+            this.clouds.push(cloud);
+        }
     }
     
     init() {
@@ -981,64 +993,79 @@ class FlappyBird {
             });
         });
         
-        // Update level complete screen with scary styling
+        // Update level complete screen with new styling
         if (this.levelComplete) {
-            // Draw psychedelic flash effect
-            if (this.flashEffect.active) {
-                const flashColor = this.flashEffect.colors[
-                    Math.floor(this.flashEffect.currentFrame / 4) % this.flashEffect.colors.length
-                ];
-                this.ctx.fillStyle = flashColor;
-                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-            }
-            
-            this.ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+            this.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
             this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
             
-            // Draw scary text with effects
-            this.ctx.save();
+            // Draw clouds first
+            this.clouds.forEach((cloud, index) => {
+                if (cloud.loaded) {
+                    // Calculate cloud dimensions
+                    const cloudWidth = 150;  // Reduced from 200 to 150
+                    const aspectRatio = cloud.height / cloud.width || 1;
+                    const cloudHeight = cloudWidth * aspectRatio;
+                    
+                    // Position clouds across the top of the screen
+                    const x = (index * (this.canvas.width / 3)) - 50;
+                    const y = 20 + (index % 2) * 40;  // Alternate heights
+                    
+                    this.ctx.drawImage(
+                        cloud,
+                        x,
+                        y,
+                        cloudWidth,
+                        cloudHeight
+                    );
+                }
+            });
             
-            // Add dripping blood effect
-            const bloodDrops = '🩸'.repeat(15);
-            this.ctx.font = `20px ${this.gameFont}`;
-            this.ctx.fillStyle = '#FF0000';
-            this.ctx.textAlign = 'center';
-            this.ctx.fillText(bloodDrops, this.canvas.width / 2, 30);
-            
-            // Main text with shadow and glow
-            this.ctx.shadowColor = '#FF0000';
-            this.ctx.shadowBlur = 20;
-            this.ctx.shadowOffsetX = 0;
-            this.ctx.shadowOffsetY = 0;
-            
-            // Glitch effect
-            const glitchOffset = Math.random() * 5 - 2.5;
-            
-            // Red layer
-            this.ctx.fillStyle = '#FF0000';
+            // Level text
+            this.ctx.fillStyle = '#FFFFFF';
+            this.ctx.strokeStyle = '#000000';
+            this.ctx.lineWidth = 3;
             this.ctx.font = `bold 52px ${this.gameFont}`;
-            this.ctx.fillText(`LEVEL ${this.currentLevel}`, this.canvas.width / 2 + glitchOffset, this.canvas.height / 3 - 40);
-            
-            // Main layer
-            this.ctx.fillStyle = '#FFF';
-            this.ctx.font = `bold 48px ${this.gameFont}`;
+            this.ctx.textAlign = 'center';
+            this.ctx.strokeText(`LEVEL ${this.currentLevel}`, this.canvas.width / 2, this.canvas.height / 3 - 40);
             this.ctx.fillText(`LEVEL ${this.currentLevel}`, this.canvas.width / 2, this.canvas.height / 3 - 40);
             
-            // Complete text with skull decorations
+            // Complete text
+            this.ctx.font = `bold 48px ${this.gameFont}`;
+            this.ctx.strokeText('COMPLETE!', this.canvas.width / 2, this.canvas.height / 3 + 20);
             this.ctx.fillText('COMPLETE!', this.canvas.width / 2, this.canvas.height / 3 + 20);
-            this.ctx.font = '30px Arial';
-            this.ctx.fillText('💀 💀 💀', this.canvas.width / 2, this.canvas.height / 3 + 70);
             
-            this.ctx.restore();
-            
-            // Draw larger continue button with spooky styling
-            this.drawDungeonButton(
-                this.continueButton.x,
-                this.continueButton.y,
-                this.continueButton.width,
-                this.continueButton.height,
-                'Continue... if you dare'
-            );
+            // Draw continue button with plain button image
+            if (this.plainBtnLoaded) {
+                const btnWidth = 200;
+                const aspectRatio = this.plainBtnImg.height / this.plainBtnImg.width;
+                const btnHeight = btnWidth * aspectRatio;
+                
+                // Update button hitbox
+                this.continueButton.width = btnWidth;
+                this.continueButton.height = btnHeight;
+                this.continueButton.x = (this.canvas.width - btnWidth) / 2;
+                this.continueButton.y = this.canvas.height / 2 + 30;
+                
+                // Draw the button
+                this.ctx.drawImage(
+                    this.plainBtnImg,
+                    this.continueButton.x,
+                    this.continueButton.y,
+                    btnWidth,
+                    btnHeight
+                );
+
+                // Add centered text on the button
+                this.ctx.fillStyle = '#000000';
+                this.ctx.font = `bold 24px ${this.gameFont}`;
+                this.ctx.textAlign = 'center';
+                this.ctx.textBaseline = 'middle';
+                this.ctx.fillText(
+                    'Continue',
+                    this.continueButton.x + (btnWidth/2),
+                    this.continueButton.y + (btnHeight/2) + 2
+                );
+            }
         }
     }
     
