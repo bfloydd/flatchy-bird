@@ -12,7 +12,9 @@ class FlappyBird {
             this.spriteAnimation.frameWidth = this.birdSprite.width / this.spriteAnimation.framesPerRow;
             this.spriteAnimation.frameHeight = this.birdSprite.height / 2; // 2 rows
             console.log('Frame size:', this.spriteAnimation.frameWidth, 'x', this.spriteAnimation.frameHeight);
-            this.init(); // Initialize game once sprite is loaded
+            if (!this.gameLoopStarted) {  // Only start if not already running
+                this.init();
+            }
         };
         this.birdSprite.onerror = (e) => {
             console.error('Error loading sprite:', e);
@@ -218,8 +220,8 @@ class FlappyBird {
         this.gameOverImg.src = 'flatchy/game_over_text.png';
         this.gameOverImgLoaded = false;
         
+        this.gameLoopStarted = false;  // Add flag to track if game loop is running
         this.bindEvents();
-        this.init();
     }
     
     init() {
@@ -230,7 +232,10 @@ class FlappyBird {
         // Ensure speed is set correctly for starting level
         this.currentSpeed = this.baseSpeed * (1 + (this.startingLevel - 1) * this.speedIncreasePerLevel);
         
-        this.gameLoop();
+        if (!this.gameLoopStarted) {  // Only start if not already running
+            this.gameLoopStarted = true;
+            this.gameLoop();
+        }
     }
     
     bindEvents() {
@@ -321,6 +326,7 @@ class FlappyBird {
             torch.flameOffset = Math.random() * Math.PI;
         });
         
+        this.gameLoopStarted = true;  // Set flag when restarting
         this.gameLoop();
     }
     
@@ -584,6 +590,7 @@ class FlappyBird {
         this.flashEffect.currentFrame = 0;
         
         cancelAnimationFrame(this.animationFrame);
+        this.gameLoopStarted = true;  // Set flag when starting new level
         this.gameLoop();
     }
     
