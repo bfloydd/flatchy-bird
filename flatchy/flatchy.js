@@ -23,6 +23,15 @@ class FlappyBird {
         this.backgroundImg.src = 'flatchy/hills.png';
         this.backgroundLoaded = false;
 
+        // Add ground image
+        this.groundImg = new Image();
+        this.groundImg.onload = () => {
+            this.groundLoaded = true;
+        };
+        this.groundImg.src = 'flatchy/ground.png';
+        this.groundLoaded = false;
+        this.groundOffset = 0;  // For scrolling effect
+
         this.birdSprite.src = 'flatchy/flatchy_flap_sprite.png';
         this.spriteLoaded = false;
         this.spriteAnimation = {
@@ -274,6 +283,15 @@ class FlappyBird {
         if (currentTime - this.spriteAnimation.lastFrameTime > this.spriteAnimation.frameInterval) {
             this.spriteAnimation.currentFrame = (this.spriteAnimation.currentFrame + 1) % this.spriteAnimation.totalFrames;
             this.spriteAnimation.lastFrameTime = currentTime;
+        }
+
+        // Update ground scroll position
+        if (this.groundLoaded) {
+            this.groundOffset -= this.currentSpeed;
+            // Reset ground position when it has scrolled one full width
+            if (this.groundOffset <= -this.groundImg.width) {
+                this.groundOffset = 0;
+            }
         }
 
         this.bird.velocity += this.bird.gravity;
@@ -569,6 +587,26 @@ class FlappyBird {
             const y = (this.canvas.height - height) / 2;
             
             this.ctx.drawImage(this.backgroundImg, x, y, width, height);
+        }
+
+        // Draw scrolling ground
+        if (this.groundLoaded) {
+            const groundHeight = 100; // Height of the ground section
+            const y = this.canvas.height - groundHeight;
+            
+            // Draw first ground image
+            this.ctx.drawImage(
+                this.groundImg,
+                this.groundOffset, y,
+                this.groundImg.width, groundHeight
+            );
+            
+            // Draw second ground image for seamless scrolling
+            this.ctx.drawImage(
+                this.groundImg,
+                this.groundOffset + this.groundImg.width, y,
+                this.groundImg.width, groundHeight
+            );
         }
         
         // Only draw the bird and trail if game has started
@@ -874,9 +912,6 @@ class FlappyBird {
             this.ctx.restore();
         }
         
-        // Draw fire base (add this before the game over/start screen overlays)
-        this.drawFireBase();
-        
         // Draw all bosses and their projectiles
         this.bosses.forEach(boss => {
             // Draw boss
@@ -951,43 +986,6 @@ class FlappyBird {
                 'Continue... if you dare'
             );
         }
-    }
-    
-    drawFireBase() {
-        this.ctx.save();
-        this.fireBase.flames.forEach((flame, index) => {
-            const time = Date.now() / 1000;
-            const y = this.canvas.height - 20 + Math.sin(time + flame.offset) * 5;
-            
-            // Draw glow effect for more intense fire
-            const gradient = this.ctx.createRadialGradient(
-                flame.x, y, 5,
-                flame.x, y, 40
-            );
-            gradient.addColorStop(0, 'rgba(255, 50, 0, 0.4)');
-            gradient.addColorStop(1, 'rgba(255, 50, 0, 0)');
-            
-            this.ctx.fillStyle = gradient;
-            this.ctx.beginPath();
-            this.ctx.arc(flame.x, y, 40, 0, Math.PI * 2);
-            this.ctx.fill();
-            
-            // Draw larger flames
-            this.ctx.font = `${flame.size}px Arial`;
-            this.ctx.textAlign = 'center';
-            this.ctx.textBaseline = 'middle';
-            this.ctx.fillText('🔥', flame.x, y);
-            
-            // Add smaller flames between main flames for denser coverage
-            if (index < this.fireBase.flames.length - 1) {
-                const midX = (flame.x + this.fireBase.flames[index + 1].x) / 2;
-                const midSize = Math.random() * 8 + 25;
-                const midY = this.canvas.height - 15 + Math.sin(time + Math.PI) * 5;
-                this.ctx.font = `${midSize}px Arial`;
-                this.ctx.fillText('🔥', midX, midY);
-            }
-        });
-        this.ctx.restore();
     }
     
     gameLoop() {
