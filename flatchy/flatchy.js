@@ -87,7 +87,7 @@ class FlappyBird {
         };
         
         // Add starting level configuration
-        this.startingLevel = 3; // Can be modified for testing different levels
+        this.startingLevel = 1; // Can be modified for testing different levels
         this.speedIncreasePerLevel = 0.5; // 50% increase per level, can be modified
         this.pillarSpaceIncreasePerLevel = .05; // Increase pillar spacing per level
         
