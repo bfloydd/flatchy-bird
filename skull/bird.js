@@ -577,8 +577,7 @@ class FlappyBird {
     }
     
     draw() {
-        // Replace sky blue background with dungeon background
-        // Draw dark stone wall background
+        // Create dungeon background with gradient
         const gradient = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height);
         gradient.addColorStop(0, '#1a1a1a');    // Very dark at top
         gradient.addColorStop(0.5, '#2d2d2d');  // Slightly lighter in middle
@@ -587,14 +586,12 @@ class FlappyBird {
         this.ctx.fillStyle = gradient;
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         
-        // Draw stone wall pattern
+        // Create repeating stone wall pattern with random texture
         this.ctx.fillStyle = '#333333';
         for (let y = 0; y < this.canvas.height; y += 40) {
             for (let x = 0; x < this.canvas.width; x += 60) {
-                // Draw brick pattern
                 this.ctx.fillRect(x, y, 58, 38);
                 
-                // Add some random darker spots for texture
                 if (Math.random() < 0.3) {
                     this.ctx.fillStyle = '#2b2b2b';
                     this.ctx.fillRect(
@@ -608,12 +605,11 @@ class FlappyBird {
             }
         }
         
-        // Draw wall torches
+        // Render wall-mounted torches with metal sconces
         this.background.torches.forEach(torch => {
-            // Draw sconce
             this.ctx.save();
             
-            // Draw metal sconce base
+            // Create metal sconce with 3D effect
             this.ctx.fillStyle = '#4a4a4a';
             this.ctx.beginPath();
             this.ctx.moveTo(torch.x - 12, torch.y);
@@ -623,19 +619,17 @@ class FlappyBird {
             this.ctx.closePath();
             this.ctx.fill();
             
-            // Add metallic highlights
             this.ctx.fillStyle = '#5a5a5a';
             this.ctx.fillRect(torch.x - 10, torch.y + 2, 20, 3);
             
-            // Draw torch stick
             this.ctx.fillStyle = '#654321';
             this.ctx.fillRect(torch.x - 3, torch.y - 15, 6, 20);
             
-            // Draw flame with localized glow
+            // Animate flame with subtle movement
             const time = Date.now() / 1000;
-            const flameY = torch.y - 20 + Math.sin(time + torch.flameOffset) * 1.5; // Reduced movement
+            const flameY = torch.y - 20 + Math.sin(time + torch.flameOffset) * 1.5;
             
-            // Draw glow
+            // Create radial glow effect
             const gradient = this.ctx.createRadialGradient(
                 torch.x, flameY, 5,
                 torch.x, flameY, 30
@@ -648,7 +642,6 @@ class FlappyBird {
             this.ctx.arc(torch.x, flameY, 30, 0, Math.PI * 2);
             this.ctx.fill();
             
-            // Draw flame
             this.ctx.font = '20px Arial';
             this.ctx.textAlign = 'center';
             this.ctx.textBaseline = 'middle';
@@ -657,11 +650,11 @@ class FlappyBird {
             this.ctx.restore();
         });
         
-        // Only draw the skull and flames if game has started
+        // Render player character when game is active
         if (this.gameStarted) {
             this.ctx.save();
             
-            // Calculate rotation based on velocity
+            // Tilt skull based on vertical movement
             let rotation = 0;
             if (this.bird.velocity < 0) {
                 rotation = -0.3;
@@ -669,30 +662,27 @@ class FlappyBird {
                 rotation = 0.3;
             }
             
-            // Draw flames behind skull with rotation
+            // Create trailing flame effect
             this.ctx.save();
             this.ctx.translate(this.bird.x + this.bird.size/2, this.bird.y + this.bird.size/2);
             this.ctx.rotate(rotation);
             
-            // Draw three flames in a horizontal line with decreasing sizes
             this.ctx.textAlign = 'center';
             this.ctx.textBaseline = 'middle';
             
-            // Largest flame nearest to skull
+            // Create flame trail with diminishing sizes
             this.ctx.font = '18px Arial';
             this.ctx.fillText('🔥', -20, 0);
             
-            // Medium flame in middle
             this.ctx.font = '14px Arial';
             this.ctx.fillText('🔥', -32, 0);
             
-            // Smallest flame farthest from skull
             this.ctx.font = '12px Arial';
             this.ctx.fillText('🔥', -42, 0);
             
             this.ctx.restore();
             
-            // Draw skull with same rotation
+            // Render rotating skull
             this.ctx.translate(this.bird.x + this.bird.size/2, this.bird.y + this.bird.size/2);
             this.ctx.rotate(rotation);
             this.ctx.font = '24px Arial';
@@ -705,10 +695,9 @@ class FlappyBird {
         
         this.ctx.fillStyle = '#2ecc71';
         this.pipes.forEach(pipe => {
-            // Dark stone color for main pillar
-            this.ctx.fillStyle = '#2C2F33';  // Dark slate color
+            // Create stone pillars with detailed texturing
+            this.ctx.fillStyle = '#2C2F33';
             
-            // Draw main pillars
             this.ctx.fillRect(pipe.x, 0, this.pipeWidth, pipe.y);
             this.ctx.fillRect(
                 pipe.x,
@@ -717,19 +706,19 @@ class FlappyBird {
                 this.canvas.height - (pipe.y + this.pipeGap)
             );
             
-            // Add stone texture and highlights
-            this.ctx.fillStyle = '#23272A';  // Darker shade for depth
+            // Add horizontal stone lines for texture
+            this.ctx.fillStyle = '#23272A';
             for (let i = 0; i < pipe.y; i += 40) {
-                this.ctx.fillRect(pipe.x, i, this.pipeWidth, 2);  // Horizontal stone lines
+                this.ctx.fillRect(pipe.x, i, this.pipeWidth, 2);
             }
             for (let i = pipe.y + this.pipeGap; i < this.canvas.height; i += 40) {
                 this.ctx.fillRect(pipe.x, i, this.pipeWidth, 2);
             }
             
-            // Add stone brick pattern
-            this.ctx.fillStyle = '#202225';  // Even darker for cracks
+            // Create vertical cracks for weathered look
+            this.ctx.fillStyle = '#202225';
             for (let i = 0; i < pipe.y; i += 80) {
-                this.ctx.fillRect(pipe.x + this.pipeWidth/3, i, 2, 40);  // Vertical cracks
+                this.ctx.fillRect(pipe.x + this.pipeWidth/3, i, 2, 40);
                 this.ctx.fillRect(pipe.x + (this.pipeWidth*2/3), i + 40, 2, 40);
             }
             for (let i = pipe.y + this.pipeGap; i < this.canvas.height; i += 80) {
@@ -737,16 +726,14 @@ class FlappyBird {
                 this.ctx.fillRect(pipe.x + (this.pipeWidth*2/3), i + 40, 2, 40);
             }
             
-            // Add chains on the sides
-            this.ctx.fillStyle = '#4A4D50';  // Metal color
-            // Left chain
+            // Add decorative chains on pillar sides
+            this.ctx.fillStyle = '#4A4D50';
             for (let i = 0; i < pipe.y; i += 20) {
-                this.ctx.fillRect(pipe.x - 8, i, 4, 10);  // Chain links
+                this.ctx.fillRect(pipe.x - 8, i, 4, 10);
             }
             for (let i = pipe.y + this.pipeGap; i < this.canvas.height; i += 20) {
                 this.ctx.fillRect(pipe.x - 8, i, 4, 10);
             }
-            // Right chain
             for (let i = 10; i < pipe.y; i += 20) {
                 this.ctx.fillRect(pipe.x + this.pipeWidth + 4, i, 4, 10);
             }
@@ -754,8 +741,8 @@ class FlappyBird {
                 this.ctx.fillRect(pipe.x + this.pipeWidth + 4, i, 4, 10);
             }
             
-            // Add highlights
-            this.ctx.fillStyle = '#36393F';  // Lighter shade for edge highlight
+            // Add edge highlights for depth
+            this.ctx.fillStyle = '#36393F';
             this.ctx.fillRect(pipe.x, 0, 3, pipe.y);
             this.ctx.fillRect(pipe.x, pipe.y + this.pipeGap, 3, this.canvas.height - (pipe.y + this.pipeGap));
         });
@@ -769,13 +756,13 @@ class FlappyBird {
             this.ctx.strokeText(`${this.score}`, this.canvas.width / 2, 50);
             this.ctx.fillText(`${this.score}`, this.canvas.width / 2, 50);
 
-            // Draw level counter in top right
+            // Display current level in top right
             this.ctx.textAlign = 'right';
             this.ctx.font = 'bold 24px Arial';
             this.ctx.strokeText(`Level ${this.currentLevel}`, this.canvas.width - 20, 40);
             this.ctx.fillText(`Level ${this.currentLevel}`, this.canvas.width - 20, 40);
 
-            // Draw total points in top left
+            // Display total score in top left
             this.ctx.textAlign = 'left';
             this.ctx.strokeText(`Total: ${this.totalPoints}`, 20, 40);
             this.ctx.fillText(`Total: ${this.totalPoints}`, 20, 40);
@@ -785,39 +772,38 @@ class FlappyBird {
             this.ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
             this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
             
-            // Draw scary text with effects
+            // Create game over screen with special effects
             this.ctx.save();
             
-            // Add dripping blood effect
+            // Add blood drip decoration
             const bloodDrops = '🩸'.repeat(15);
             this.ctx.font = '20px Arial';
             this.ctx.fillStyle = '#FF0000';
             this.ctx.textAlign = 'center';
             this.ctx.fillText(bloodDrops, this.canvas.width / 2, 30);
             
-            // Main text with shadow and glow
+            // Apply shadow and glow effects to text
             this.ctx.shadowColor = '#FF0000';
             this.ctx.shadowBlur = 20;
             this.ctx.shadowOffsetX = 0;
             this.ctx.shadowOffsetY = 0;
             
-            // Glitch effect
+            // Create random offset for glitch animation
             const glitchOffset = Math.random() * 5 - 2.5;
             
-            // Red layer
+            // Render glitched red text layer
             this.ctx.fillStyle = '#FF0000';
             this.ctx.font = 'bold 43px Arial';
             this.ctx.fillText('GAME OVER', this.canvas.width / 2 + glitchOffset, this.canvas.height / 3 - 40);
             
-            // Main layer
+            // Render base white text layer
             this.ctx.fillStyle = '#FFF';
             this.ctx.font = 'bold 42px Arial';
             this.ctx.fillText('GAME OVER', this.canvas.width / 2, this.canvas.height / 3 - 40);
             
-            // Calculate final score
             const finalScore = this.currentLevel * this.totalPoints;
             
-            // Score text with skull decorations
+            // Render final score with decorative elements
             this.ctx.fillText(`SCORE: ${finalScore}`, this.canvas.width / 2, this.canvas.height / 3 + 20);
             this.ctx.font = '24px Arial';
             this.ctx.fillText(`(Level ${this.currentLevel} × ${this.totalPoints} points)`, this.canvas.width / 2, this.canvas.height / 3 + 50);
@@ -826,7 +812,7 @@ class FlappyBird {
             
             this.ctx.restore();
             
-            // Draw restart button with spooky styling
+            // Render themed restart button
             this.drawDungeonButton(
                 this.restartButton.x,
                 this.restartButton.y,
@@ -840,46 +826,46 @@ class FlappyBird {
             this.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
             this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
             
-            // Draw title with effects
+            // Initialize title screen effects
             this.ctx.save();
             
-            // Main text with shadow and glow
+            // Apply shadow and glow effects
             this.ctx.shadowColor = '#FF0000';
             this.ctx.shadowBlur = 20;
             this.ctx.shadowOffsetX = 0;
             this.ctx.shadowOffsetY = 0;
             
-            // Glitch effect
+            // Create random offset for glitch animation
             const glitchOffset = Math.random() * 5 - 2.5;
             
-            // Red layer
+            // Render glitched red text layer
             this.ctx.fillStyle = '#FF0000';
             this.ctx.font = 'bold 43px Arial';
             this.ctx.textAlign = 'center';
             this.ctx.fillText('FLAMING', this.canvas.width / 2 + glitchOffset, this.canvas.height / 3 - 40);
             this.ctx.fillText('BIRD SKULL', this.canvas.width / 2 + glitchOffset, this.canvas.height / 3 + 10);
             
-            // Main layer
+            // Render base white text layer
             this.ctx.fillStyle = '#FFF';
             this.ctx.font = 'bold 42px Arial';
             this.ctx.fillText('FLAMING', this.canvas.width / 2, this.canvas.height / 3 - 40);
             this.ctx.fillText('BIRD SKULL', this.canvas.width / 2, this.canvas.height / 3 + 10);
             
-            // Add flame and skull decorations
+            // Add decorative icons
             this.ctx.font = '30px Arial';
             this.ctx.fillText('🔥 💀 🔥', this.canvas.width / 2, this.canvas.height / 3 + 60);
             
             this.ctx.restore();
             
-            // Draw start button with dungeon styling
+            // Initialize start button styling
             this.ctx.save();
             
-            // Add glow effect
+            // Apply glow effect to button
             this.ctx.shadowColor = '#ff4400';
             this.ctx.shadowBlur = 20;
             
-            // Draw stone button background
-            this.ctx.fillStyle = '#2C2F33';  // Dark slate color (matching pillars)
+            // Create stone-textured button background
+            this.ctx.fillStyle = '#2C2F33';
             this.ctx.fillRect(
                 this.startButton.x,
                 this.startButton.y,
@@ -887,8 +873,8 @@ class FlappyBird {
                 this.startButton.height
             );
             
-            // Add stone texture
-            this.ctx.fillStyle = '#23272A';  // Darker shade for depth
+            // Add vertical lines for stone texture
+            this.ctx.fillStyle = '#23272A';
             for (let i = 0; i < this.startButton.width; i += 20) {
                 this.ctx.fillRect(
                     this.startButton.x + i,
@@ -898,7 +884,7 @@ class FlappyBird {
                 );
             }
             
-            // Add metallic border
+            // Create metallic border effect
             this.ctx.fillStyle = '#4A4D50';
             this.ctx.fillRect(
                 this.startButton.x - 2,
@@ -925,13 +911,13 @@ class FlappyBird {
                 this.startButton.height
             );
             
-            // Draw text with glow
+            // Render button text with glow
             this.ctx.fillStyle = '#fff';
             this.ctx.font = 'bold 24px Arial';
             this.ctx.textAlign = 'center';
             this.ctx.textBaseline = 'middle';
             this.ctx.fillText(
-                'Start',  // Changed from 'Enter Dungeon' back to 'Start'
+                'Start',
                 this.canvas.width / 2,
                 this.startButton.y + this.startButton.height/2
             );
@@ -939,27 +925,25 @@ class FlappyBird {
             this.ctx.restore();
         }
         
-        // Draw fire base (add this before the game over/start screen overlays)
+        // Render base fire effect
         this.drawFireBase();
         
-        // Draw all bosses and their projectiles
+        // Render boss characters and projectiles
         this.bosses.forEach(boss => {
-            // Draw boss
             this.ctx.font = `${boss.type.size}px Arial`;
             this.ctx.textAlign = 'center';
             this.ctx.textBaseline = 'middle';
             this.ctx.fillText(boss.type.emoji, boss.x, boss.y);
             
-            // Draw projectiles
             boss.projectiles.forEach(projectile => {
                 this.ctx.font = `${projectile.size}px Arial`;
                 this.ctx.fillText(projectile.emoji, projectile.x, projectile.y);
             });
         });
         
-        // Update level complete screen with scary styling
+        // Render level completion screen
         if (this.levelComplete) {
-            // Draw psychedelic flash effect
+            // Create psychedelic flash animation
             if (this.flashEffect.active) {
                 const flashColor = this.flashEffect.colors[
                     Math.floor(this.flashEffect.currentFrame / 4) % this.flashEffect.colors.length
@@ -971,43 +955,43 @@ class FlappyBird {
             this.ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
             this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
             
-            // Draw scary text with effects
+            // Initialize completion screen effects
             this.ctx.save();
             
-            // Add dripping blood effect
+            // Create blood drip decoration
             const bloodDrops = '🩸'.repeat(15);
             this.ctx.font = '20px Arial';
             this.ctx.fillStyle = '#FF0000';
             this.ctx.textAlign = 'center';
             this.ctx.fillText(bloodDrops, this.canvas.width / 2, 30);
             
-            // Main text with shadow and glow
+            // Apply shadow and glow effects
             this.ctx.shadowColor = '#FF0000';
             this.ctx.shadowBlur = 20;
             this.ctx.shadowOffsetX = 0;
             this.ctx.shadowOffsetY = 0;
             
-            // Glitch effect
+            // Create random offset for glitch animation
             const glitchOffset = Math.random() * 5 - 2.5;
             
-            // Red layer
+            // Render glitched red text layer
             this.ctx.fillStyle = '#FF0000';
             this.ctx.font = 'bold 52px Arial';
             this.ctx.fillText(`LEVEL ${this.currentLevel}`, this.canvas.width / 2 + glitchOffset, this.canvas.height / 3 - 40);
             
-            // Main layer
+            // Render base white text layer
             this.ctx.fillStyle = '#FFF';
             this.ctx.font = 'bold 48px Arial';
             this.ctx.fillText(`LEVEL ${this.currentLevel}`, this.canvas.width / 2, this.canvas.height / 3 - 40);
             
-            // Complete text with skull decorations
+            // Add completion message and decorations
             this.ctx.fillText('COMPLETE!', this.canvas.width / 2, this.canvas.height / 3 + 20);
             this.ctx.font = '30px Arial';
             this.ctx.fillText('💀 💀 💀', this.canvas.width / 2, this.canvas.height / 3 + 70);
             
             this.ctx.restore();
             
-            // Draw larger continue button with spooky styling
+            // Render themed continue button
             this.drawDungeonButton(
                 this.continueButton.x,
                 this.continueButton.y,
@@ -1024,7 +1008,7 @@ class FlappyBird {
             const time = Date.now() / 1000;
             const y = this.canvas.height - 20 + Math.sin(time + flame.offset) * 5;
             
-            // Draw glow effect for more intense fire
+            // Create radial gradient for flame glow
             const gradient = this.ctx.createRadialGradient(
                 flame.x, y, 5,
                 flame.x, y, 40
@@ -1037,13 +1021,13 @@ class FlappyBird {
             this.ctx.arc(flame.x, y, 40, 0, Math.PI * 2);
             this.ctx.fill();
             
-            // Draw larger flames
+            // Render main flame emoji
             this.ctx.font = `${flame.size}px Arial`;
             this.ctx.textAlign = 'center';
             this.ctx.textBaseline = 'middle';
             this.ctx.fillText('🔥', flame.x, y);
             
-            // Add smaller flames between main flames for denser coverage
+            // Create intermediate flames for continuous fire effect
             if (index < this.fireBase.flames.length - 1) {
                 const midX = (flame.x + this.fireBase.flames[index + 1].x) / 2;
                 const midSize = Math.random() * 8 + 25;
@@ -1063,32 +1047,32 @@ class FlappyBird {
         }
     }
     
-    // Add helper method for drawing dungeon-style buttons
+    // Create themed button with stone texture and glowing effects
     drawDungeonButton(x, y, width, height, text) {
         this.ctx.save();
         
-        // Add glow effect
+        // Create orange glow effect
         this.ctx.shadowColor = '#ff4400';
         this.ctx.shadowBlur = 20;
         
-        // Draw stone button background
-        this.ctx.fillStyle = '#2C2F33';  // Dark slate color
+        // Create base stone background
+        this.ctx.fillStyle = '#2C2F33';
         this.ctx.fillRect(x, y, width, height);
         
-        // Add stone texture
-        this.ctx.fillStyle = '#23272A';  // Darker shade for depth
+        // Add vertical line texture
+        this.ctx.fillStyle = '#23272A';
         for (let i = 0; i < width; i += 20) {
             this.ctx.fillRect(x + i, y, 2, height);
         }
         
-        // Add metallic border
+        // Create raised border effect
         this.ctx.fillStyle = '#4A4D50';
         this.ctx.fillRect(x - 2, y - 2, width + 4, 4);
         this.ctx.fillRect(x - 2, y + height - 2, width + 4, 4);
         this.ctx.fillRect(x - 2, y, 4, height);
         this.ctx.fillRect(x + width - 2, y, 4, height);
         
-        // Draw text with glow
+        // Add glowing text
         this.ctx.fillStyle = '#fff';
         this.ctx.font = 'bold 24px Arial';
         this.ctx.textAlign = 'center';
