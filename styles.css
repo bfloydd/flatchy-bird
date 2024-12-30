@@ -42,19 +42,19 @@ main {
 .game-button {
     position: relative;
     padding: 0;
-    font-size: 1.2rem;
-    color: #444444;
+    font-size: 1.35rem;
+    color: #3c3c3c;
     border: none;
     cursor: pointer;
     text-decoration: none;
     background: url('8bit-empty-btn-trans.png') no-repeat center center;
-    width: 280px;
+    width: 265px;
     height: 110px;
     text-align: center;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
     transition: transform 0.2s ease;
     font-family: 'Bangers', cursive, system-ui;
     text-transform: uppercase;
