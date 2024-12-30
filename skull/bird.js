@@ -53,10 +53,10 @@ class FlappyBird {
         corners.forEach(corner => {
             const cornerDiv = document.createElement('div');
             cornerDiv.style.position = 'absolute';
-            cornerDiv.style.width = '70px';
-            cornerDiv.style.height = '70px';
+            cornerDiv.style.width = '65px';
+            cornerDiv.style.height = '65px';
             cornerDiv.style.background = woodColor2;
-            cornerDiv.style.borderRadius = '18px';
+            cornerDiv.style.borderRadius = '16px';
             cornerDiv.style.boxShadow = 'inset 0 0 10px rgba(0,0,0,0.8)';
             cornerDiv.style.zIndex = '1';
             
