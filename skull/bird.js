@@ -1,15 +1,87 @@
 class FlappyBird {
     constructor() {
+        // Create container div for frame and canvas
+        this.container = document.createElement('div');
+        this.container.style.position = 'fixed';
+        this.container.style.left = '50%';
+        this.container.style.top = '50%';
+        this.container.style.transform = 'translate(-50%, -50%)';
+        this.container.style.width = '920px';
+        this.container.style.height = '720px';
+        this.container.style.padding = '40px';
+        this.container.style.display = 'flex';
+        this.container.style.alignItems = 'center';
+        this.container.style.justifyContent = 'center';
+        this.container.style.boxSizing = 'border-box';
+        this.container.style.backgroundColor = '#2b1810'; // Very dark brown base
+        
+        // Create rich wood texture with multiple gradients
+        const woodColor1 = '#2b1810'; // Very dark brown
+        const woodColor2 = '#3c2415'; // Dark brown
+        const woodColor3 = '#5c3a21'; // Medium brown
+        
+        // Create frame effect with gradients
+        this.container.style.background = `
+            linear-gradient(${woodColor2}, ${woodColor1} 20%, ${woodColor2} 50%, ${woodColor1} 80%, ${woodColor2}),
+            linear-gradient(90deg, ${woodColor2}, ${woodColor1} 20%, ${woodColor2} 50%, ${woodColor1} 80%, ${woodColor2})`;
+        
+        // Add inner shadow for depth
+        this.container.style.boxShadow = `
+            inset 0 0 30px rgba(0,0,0,0.8),
+            5px 5px 20px rgba(0,0,0,0.4)`;
+        
+        // Create inner container for padding and centering
+        this.innerContainer = document.createElement('div');
+        this.innerContainer.style.width = '800px';
+        this.innerContainer.style.height = '600px';
+        this.innerContainer.style.position = 'relative';
+        this.innerContainer.style.backgroundColor = '#000';
+        this.innerContainer.style.boxShadow = '0 0 20px rgba(0,0,0,0.5)';
+        this.container.appendChild(this.innerContainer);
+        
+        // Add ornate corner decorations with enhanced styling
+        const corners = ['top-left', 'top-right', 'bottom-left', 'bottom-right'];
+        corners.forEach(corner => {
+            const cornerDiv = document.createElement('div');
+            cornerDiv.style.position = 'absolute';
+            cornerDiv.style.width = '70px';
+            cornerDiv.style.height = '70px';
+            cornerDiv.style.background = woodColor2;
+            cornerDiv.style.borderRadius = '18px';
+            cornerDiv.style.boxShadow = 'inset 0 0 10px rgba(0,0,0,0.8)';
+            cornerDiv.style.zIndex = '1';
+            
+            // Add decorative pattern to corners
+            cornerDiv.style.backgroundImage = `
+                radial-gradient(circle at center, ${woodColor3} 0%, ${woodColor2} 60%, ${woodColor1} 100%)`;
+            
+            // Position corners - adjusted to be more tucked in
+            if (corner.includes('top')) cornerDiv.style.top = '0px';
+            if (corner.includes('bottom')) cornerDiv.style.bottom = '0px';
+            if (corner.includes('left')) cornerDiv.style.left = '0px';
+            if (corner.includes('right')) cornerDiv.style.right = '0px';
+            
+            this.container.appendChild(cornerDiv);
+        });
+        
+        // Create and style canvas with centered positioning
+        this.canvas = document.createElement('canvas');
+        this.canvas.width = 800;
+        this.canvas.height = 600;
+        this.canvas.style.display = 'block';
+        this.canvas.style.backgroundColor = '#000';
+        this.canvas.style.boxShadow = 'inset 0 0 20px rgba(0,0,0,0.9)';
+        
+        // Append canvas to inner container, then container to body
+        this.innerContainer.appendChild(this.canvas);
+        document.body.appendChild(this.container);
+        
+        this.ctx = this.canvas.getContext('2d');
+        
         // Add starting level configuration
         this.startingLevel = 1; // Can be modified for testing different levels
         this.speedIncreasePerLevel = 0.5; // 50% increase per level, can be modified
         this.pillarSpaceIncreasePerLevel = .05; // Increase pillar spacing per level
-        
-        this.canvas = document.createElement('canvas');
-        this.canvas.width = 800;
-        this.canvas.height = 600;
-        document.body.appendChild(this.canvas);
-        this.ctx = this.canvas.getContext('2d');
         
         // Initialize game properties
         this.bird = {
