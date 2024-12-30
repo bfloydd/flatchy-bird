@@ -1,6 +1,6 @@
 class FlappyBird {
     constructor() {
-        // Create container div for frame and canvas
+        // Setup main container with wooden frame effect
         this.container = document.createElement('div');
         this.container.style.position = 'fixed';
         this.container.style.left = '50%';
@@ -13,14 +13,14 @@ class FlappyBird {
         this.container.style.alignItems = 'center';
         this.container.style.justifyContent = 'center';
         this.container.style.boxSizing = 'border-box';
-        this.container.style.backgroundColor = '#2b1810'; // Very dark brown base
+        this.container.style.backgroundColor = '#2b1810';
         
-        // Create rich wood texture with multiple gradients
-        const woodColor1 = '#3c2415'; // Slightly lighter dark brown
-        const woodColor2 = '#5c3a21'; // Slightly lighter medium brown
-        const woodColor3 = '#7a4a31'; // Slightly lighter medium brown
+        // Define wood colors for frame texture
+        const woodColor1 = '#3c2415'; // Base brown
+        const woodColor2 = '#5c3a21'; // Mid-tone
+        const woodColor3 = '#7a4a31'; // Highlight
         
-        // Create frame effect with gradients and subtle wood grain
+        // Apply layered gradients for realistic wood grain effect
         this.container.style.background = `
             linear-gradient(${woodColor2}, ${woodColor1} 20%, ${woodColor2} 50%, ${woodColor1} 80%, ${woodColor2}),
             linear-gradient(90deg, ${woodColor2}, ${woodColor1} 20%, ${woodColor2} 50%, ${woodColor1} 80%, ${woodColor2}),
@@ -34,12 +34,12 @@ class FlappyBird {
         
         this.container.style.backgroundBlendMode = 'overlay, overlay, normal';
         
-        // Add inner shadow for depth
+        // Add depth with shadows
         this.container.style.boxShadow = `
             inset 0 0 30px rgba(0,0,0,0.8),
             5px 5px 20px rgba(0,0,0,0.4)`;
         
-        // Create inner container for padding and centering
+        // Setup black game canvas container
         this.innerContainer = document.createElement('div');
         this.innerContainer.style.width = '800px';
         this.innerContainer.style.height = '600px';
@@ -48,7 +48,7 @@ class FlappyBird {
         this.innerContainer.style.boxShadow = '0 0 20px rgba(0,0,0,0.5)';
         this.container.appendChild(this.innerContainer);
         
-        // Add ornate corner decorations with enhanced styling
+        // Add decorative corner pieces
         const corners = ['top-left', 'top-right', 'bottom-left', 'bottom-right'];
         corners.forEach(corner => {
             const cornerDiv = document.createElement('div');
@@ -60,11 +60,11 @@ class FlappyBird {
             cornerDiv.style.boxShadow = 'inset 0 0 10px rgba(0,0,0,0.8)';
             cornerDiv.style.zIndex = '1';
             
-            // Add decorative pattern to corners
+            // Apply gradient for dimensional effect
             cornerDiv.style.backgroundImage = `
                 radial-gradient(circle at center, ${woodColor3} 0%, ${woodColor2} 60%, ${woodColor1} 100%)`;
             
-            // Position corners - adjusted to be more tucked in
+            // Position each corner flush against the frame
             if (corner.includes('top')) cornerDiv.style.top = '0px';
             if (corner.includes('bottom')) cornerDiv.style.bottom = '0px';
             if (corner.includes('left')) cornerDiv.style.left = '0px';
@@ -73,7 +73,7 @@ class FlappyBird {
             this.container.appendChild(cornerDiv);
         });
         
-        // Create and style canvas with centered positioning
+        // Initialize game canvas
         this.canvas = document.createElement('canvas');
         this.canvas.width = 800;
         this.canvas.height = 600;
@@ -81,18 +81,17 @@ class FlappyBird {
         this.canvas.style.backgroundColor = '#000';
         this.canvas.style.boxShadow = 'inset 0 0 20px rgba(0,0,0,0.9)';
         
-        // Append canvas to inner container, then container to body
         this.innerContainer.appendChild(this.canvas);
         document.body.appendChild(this.container);
         
         this.ctx = this.canvas.getContext('2d');
         
-        // Add starting level configuration
-        this.startingLevel = 1; // Can be modified for testing different levels
-        this.speedIncreasePerLevel = 0.5; // 50% increase per level, can be modified
-        this.pillarSpaceIncreasePerLevel = .05; // Increase pillar spacing per level
+        // Game difficulty settings
+        this.startingLevel = 1;
+        this.speedIncreasePerLevel = 0.5;    // 50% speed increase per level
+        this.pillarSpaceIncreasePerLevel = .05;
         
-        // Initialize game properties
+        // Player character physics
         this.bird = {
             x: 50,
             y: 200,
@@ -102,22 +101,22 @@ class FlappyBird {
             size: 24
         };
         
-        this.baseSpeed = 1.8; // Base speed for pipes and game elements
-        // Set initial speed based on starting level
+        // Movement and obstacle settings
+        this.baseSpeed = 1.8;
         this.currentSpeed = this.baseSpeed * (1 + (this.startingLevel - 1) * this.speedIncreasePerLevel);
-        
         this.pipes = [];
         this.pipeWidth = 50;
         this.pipeGap = 150;
         this.pipeInterval = 2000;
         this.lastPipe = 0;
         
+        // Score tracking
         this.score = 0;
-        this.totalPoints = 0;  // Track total points across all levels
+        this.totalPoints = 0;
         this.gameStarted = false;
         this.gameOver = false;
         
-        // Add start button
+        // UI button configurations
         this.startButton = {
             x: this.canvas.width / 2 - 100,
             y: this.canvas.height / 2 + 50,
@@ -125,7 +124,6 @@ class FlappyBird {
             height: 50
         };
         
-        // Add restart button
         this.restartButton = {
             x: this.canvas.width / 2 - 100,
             y: this.canvas.height / 2 + 50,
@@ -133,7 +131,7 @@ class FlappyBird {
             height: 50
         };
         
-        // Add fire base properties
+        // Base flame animation setup
         this.fireBase = {
             flames: Array(20).fill().map((_, i) => ({
                 x: i * (this.canvas.width / 19),
@@ -142,11 +140,10 @@ class FlappyBird {
             }))
         };
         
-        // Track all active bosses
         this.bosses = [];
-        
-        // Add victory state and continue button
         this.levelComplete = false;
+        
+        // Level completion UI
         this.continueButton = {
             x: this.canvas.width / 2 - 150,
             y: this.canvas.height / 2 + 100,
@@ -154,18 +151,17 @@ class FlappyBird {
             height: 60
         };
         
-        // Add flash effect properties
+        // Victory animation settings
         this.flashEffect = {
             active: false,
-            duration: 60,  // frames
+            duration: 60,
             currentFrame: 0,
             colors: ['#FF0000', '#00FF00', '#0000FF', '#FF00FF', '#FFFF00']
         };
         
-        // Add level tracking - initialize to starting level
         this.currentLevel = this.startingLevel;
         
-        // Add dungeon background properties
+        // Background torch animations
         this.background = {
             torches: Array(4).fill().map((_, i) => ({
                 x: i * (this.canvas.width / 3),
@@ -174,7 +170,7 @@ class FlappyBird {
             }))
         };
         
-        // Define boss types with increasing difficulty
+        // Boss enemy configurations
         this.bossTypes = {
             GHOST: {
                 emoji: '👻',
@@ -196,13 +192,10 @@ class FlappyBird {
             }
         };
         
-        // Track if boss has appeared for current level
         this.bossHasAppeared = false;
-        
-        // Add boss shooting timer
         this.bossShootTimer = {
             lastShot: 0,
-            minInterval: 3000  // Minimum 3 seconds between shots
+            minInterval: 3000
         };
         
         this.bindEvents();
@@ -210,11 +203,10 @@ class FlappyBird {
     }
     
     init() {
-        // Don't initialize boss immediately
         this.bosses = [];
         this.bossHasAppeared = false;
         
-        // Ensure speed is set correctly for starting level
+        // Reset speed for current level
         this.currentSpeed = this.baseSpeed * (1 + (this.startingLevel - 1) * this.speedIncreasePerLevel);
         
         this.gameLoop();
@@ -238,7 +230,6 @@ class FlappyBird {
                     clickX <= this.continueButton.x + this.continueButton.width &&
                     clickY >= this.continueButton.y && 
                     clickY <= this.continueButton.y + this.continueButton.height) {
-                    // Start next level with increased difficulty
                     this.startLevel(this.currentLevel + 1);
                 }
             } else if (this.gameOver) {
@@ -263,7 +254,6 @@ class FlappyBird {
         document.addEventListener('keydown', (e) => {
             if (e.code === 'Space') {
                 if (this.levelComplete) {
-                    // Start next level with increased difficulty
                     this.startLevel(this.currentLevel + 1);
                 } else if (this.gameOver) {
                     this.restart();
@@ -277,6 +267,7 @@ class FlappyBird {
     }
     
     restart() {
+        // Reset player state
         this.bird = {
             x: 50,
             y: 200,
@@ -285,24 +276,22 @@ class FlappyBird {
             jump: -4.5,
             size: 24
         };
+        
+        // Reset game state
         this.pipes = [];
         this.lastPipe = 0;
         this.score = 0;
-        this.totalPoints = 0;  // Reset total points on full restart
+        this.totalPoints = 0;
         this.gameStarted = false;
         this.gameOver = false;
         
         this.bosses = [];
         this.bossHasAppeared = false;
-        
         this.levelComplete = false;
-        
-        // Reset to starting level first
         this.currentLevel = this.startingLevel;
-        
-        // Then set speed based on the starting level
         this.currentSpeed = this.baseSpeed * (1 + (this.startingLevel - 1) * this.speedIncreasePerLevel);
         
+        // Reset visual effects
         this.background.torches.forEach(torch => {
             torch.flameOffset = Math.random() * Math.PI;
         });
