@@ -1,6 +1,6 @@
 class FlappyBird {
     constructor() {
-        // Define font style for consistent use throughout
+        // Define font style for consistent text rendering across the game
         this.gameFont = '"Chalkboard SE", cursive';
         
         // Add bird sprite image and animation properties
@@ -78,20 +78,20 @@ class FlappyBird {
 
         this.spriteLoaded = false;
         this.spriteAnimation = {
-            frameWidth: 8,      // Will be updated when sprite loads
-            frameHeight: 8,     // Will be updated when sprite loads
-            totalFrames: 11,    // Changed from 12 to 11 to skip last frame
-            framesPerRow: 6,    // Organized as 2 rows of 6 frames
+            frameWidth: 8,      // Will be dynamically updated when sprite loads
+            frameHeight: 8,     // Will be dynamically updated when sprite loads
+            totalFrames: 11,    // Using 11 frames to create smooth animation cycle
+            framesPerRow: 6,    // Sprite sheet organized as 2 rows with 6 frames each
             currentFrame: 0,
             frameTimer: 0,
-            frameInterval: 100,  // Animation speed
+            frameInterval: 100, // Milliseconds between frame updates
             lastFrameTime: 0
         };
         
-        // Add starting level configuration
-        this.startingLevel = 1; // Can be modified for testing different levels
-        this.speedIncreasePerLevel = 0.5; // 50% increase per level
-        this.pillarSpaceIncreasePerLevel = .05; // Increase pillar spacing per level
+        // Game configuration for progressive difficulty
+        this.startingLevel = 1;
+        this.speedIncreasePerLevel = 0.5;     // 50% speed increase per level
+        this.pillarSpaceIncreasePerLevel = .05; // 5% increase in pillar spacing per level
         
         this.canvas = document.createElement('canvas');
         this.canvas.width = 800;
@@ -99,7 +99,7 @@ class FlappyBird {
         document.body.appendChild(this.canvas);
         this.ctx = this.canvas.getContext('2d');
         
-        // Initialize game properties
+        // Bird physics and collision properties
         this.bird = {
             x: 50,
             y: 200,
@@ -109,22 +109,25 @@ class FlappyBird {
             size: 48
         };
         
-        this.baseSpeed = 1.8; // Base speed for pipes and game elements
-        // Set initial speed based on starting level
+        // Base movement speed affects pipes and game elements
+        this.baseSpeed = 1.8;
+        // Calculate initial speed based on starting level
         this.currentSpeed = this.baseSpeed * (1 + (this.startingLevel - 1) * this.speedIncreasePerLevel);
         
+        // Pipe generation and gameplay parameters
         this.pipes = [];
-        this.pipeWidth = 60;  // Reduced from 90 to 60 for better tree size
-        this.pipeGap = 150;
-        this.pipeInterval = 2000;
+        this.pipeWidth = 60;  // Width of tree obstacles
+        this.pipeGap = 150;   // Vertical space between pipes for bird passage
+        this.pipeInterval = 2000; // Time between pipe spawns in milliseconds
         this.lastPipe = 0;
         
-        this.score = 0;        // Running total across all levels
+        // Scoring system tracks both overall and per-level progress
+        this.score = 0;        // Total score across all levels
         this.levelScore = 0;   // Score for current level only
         this.gameStarted = false;
         this.gameOver = false;
         
-        // Add start button
+        // UI element positioning
         this.startButton = {
             x: this.canvas.width / 2 - 100,
             y: this.canvas.height / 2 + 30,
@@ -140,7 +143,7 @@ class FlappyBird {
             height: 50
         };
         
-        // Add fire base properties
+        // Fire effect configuration for visual ambiance
         this.fireBase = {
             flames: Array(20).fill().map((_, i) => ({
                 x: i * (this.canvas.width / 19),
@@ -181,7 +184,7 @@ class FlappyBird {
             }))
         };
         
-        // Define boss types with increasing difficulty
+        // Boss types with increasing difficulty and unique projectiles
         this.bossTypes = {
             GHOST: {
                 emoji: '👻',
@@ -633,16 +636,16 @@ class FlappyBird {
     }
     
     checkCollision(pipe) {
-        // Add minimal padding to make hitbox match the visual tree trunk
-        const hitboxPadding = 8;  // Much smaller padding to prevent going into tree
-        const verticalPadding = 5; // Smaller vertical padding
+        // Hitbox adjustments for precise collision detection
+        const hitboxPadding = 8;  // Padding to match visual tree trunk
+        const verticalPadding = 5; // Vertical padding for more forgiving collisions
         
-        // Adjust bird hitbox to be a moderate size that matches the bird's body
+        // Adjust bird hitbox to match the visible sprite
         const birdBox = {
-            left: this.bird.x + this.bird.size/3,     // Move hitbox right to match actual bird body
-            right: this.bird.x + this.bird.size/1.2,  // Cover most of the bird's width
-            top: this.bird.y + this.bird.size/4,      // Start a bit higher
-            bottom: this.bird.y + this.bird.size/1.3   // Cover most of the bird's height
+            left: this.bird.x + this.bird.size/3,     // Align with bird's body
+            right: this.bird.x + this.bird.size/1.2,  // Cover main body width
+            top: this.bird.y + this.bird.size/4,      // Account for head position
+            bottom: this.bird.y + this.bird.size/1.3   // Match body height
         };
         
         const topPipeBox = {
@@ -828,14 +831,12 @@ class FlappyBird {
             this.ctx.translate(this.bird.x + this.bird.size/2, this.bird.y + this.bird.size/2);
             this.ctx.rotate(rotation);
             
-            // Calculate the row and column in the sprite sheet
+            // Calculate sprite sheet position for current animation frame
             let column, row;
             if (this.gameOver) {
-                // Use the final frame (bottom right) for dead bird
-                column = 5;  // Last column (0-based index)
-                row = 1;    // Bottom row (0-based index)
+                column = 5;  // Last column for death animation
+                row = 1;    // Bottom row contains death frame
             } else {
-                // Normal animation frames
                 column = this.spriteAnimation.currentFrame % this.spriteAnimation.framesPerRow;
                 row = Math.floor(this.spriteAnimation.currentFrame / this.spriteAnimation.framesPerRow);
             }
