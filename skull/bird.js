@@ -307,13 +307,13 @@ class FlappyBird {
         
         const now = Date.now();
         
-        // Calculate how many unscored pipes are currently in play
+        // Track remaining pipes needed to complete the level
         const unscoredPipes = this.pipes.filter(pipe => !pipe.scored).length;
         
-        // Adjust pipe interval based on current speed and spacing increase
+        // Dynamic pipe spawn timing based on level difficulty
         const adjustedPipeInterval = 2000 / (1 + (this.currentLevel - 1) * this.pillarSpaceIncreasePerLevel);
         
-        // Only generate new pipes if we need more to reach 10 points
+        // Spawn new pipes until level completion (10 points)
         if (now - this.lastPipe > adjustedPipeInterval && (unscoredPipes + this.score) < 10) {
             const pipeY = Math.random() * (this.canvas.height - this.pipeGap - 100) + 50;
             this.pipes.push({
@@ -324,7 +324,7 @@ class FlappyBird {
             this.lastPipe = now;
         }
         
-        // Update pipes with current speed
+        // Move pipes and handle scoring
         this.pipes.forEach(pipe => {
             pipe.x -= this.currentSpeed;
             
@@ -334,16 +334,15 @@ class FlappyBird {
             
             if (!pipe.scored && pipe.x + this.pipeWidth < this.bird.x) {
                 this.score++;
-                this.totalPoints++;  // Increment total points when scoring
+                this.totalPoints++;  // Track overall game progress
                 pipe.scored = true;
 
-                // Spawn boss when reaching 5 points if it hasn't appeared yet
+                // Spawn level boss at halfway point
                 if (this.score === 5 && !this.bossHasAppeared) {
                     const bossTypes = [this.bossTypes.GHOST, this.bossTypes.DEMON, this.bossTypes.SKULL];
                     const bossIndex = (this.currentLevel - 1) % bossTypes.length;
                     const bossType = bossTypes[bossIndex];
                     
-                    // Randomly choose entrance direction
                     const entrances = ['bottom', 'top', 'right'];
                     const entrance = entrances[Math.floor(Math.random() * entrances.length)];
                     
@@ -386,7 +385,7 @@ class FlappyBird {
             this.bird.y = Math.max(0, Math.min(this.bird.y, this.canvas.height - this.bird.size));
         }
         
-        // Update flame positions with current speed
+        // Animate background flames
         if (!this.gameOver && this.gameStarted) {
             this.fireBase.flames.forEach(flame => {
                 flame.x -= this.currentSpeed * 0.67;
@@ -398,9 +397,9 @@ class FlappyBird {
             });
         }
         
-        // Update bosses with increased difficulty per level
+        // Update boss behavior and difficulty scaling
         this.bosses.forEach(boss => {
-            // Handle entrance animation
+            // Smooth entrance animation
             if (boss.entranceProgress < 1) {
                 boss.entranceProgress += 0.02;
                 const easing = 1 - Math.pow(1 - boss.entranceProgress, 3);
@@ -409,28 +408,28 @@ class FlappyBird {
                 return;
             }
 
-            // Scale boss speed with current level (reduced scaling)
+            // Scale boss movement with level progression
             const bossSpeed = this.currentSpeed * (1 + (this.currentLevel - 1) * 0.03);
             
-            // Keep boss in the right half of the screen
+            // Maintain boss position in right half of screen
             if (boss.x < this.canvas.width / 2) {
                 boss.x = this.canvas.width / 2;
             }
             
-            // Boss movement pattern (slower movement)
+            // Basic horizontal movement
             boss.x -= bossSpeed * 0.2;
             if (boss.x < this.canvas.width / 2) boss.x = this.canvas.width - 50;
             
-            // More complex movement pattern based on level (reduced amplitude)
+            // Level-based movement complexity
             const timeScale = 1 + (this.currentLevel - 1) * 0.05;
             
-            // Limit vertical movement to middle 60% of screen
+            // Restrict vertical movement range
             const maxVerticalDistance = this.canvas.height * 0.3;
             const centerY = this.canvas.height / 2;
             const verticalOffset = Math.sin(Date.now() / 1000 * timeScale) * (30 + this.currentLevel * 2);
             boss.y = centerY + Math.max(-maxVerticalDistance, Math.min(maxVerticalDistance, verticalOffset));
             
-            // Check collision with boss
+            // Boss collision detection
             const distance = Math.hypot(
                 boss.x - (this.bird.x + this.bird.size/2),
                 boss.y - (this.bird.y + this.bird.size/2)
@@ -439,11 +438,11 @@ class FlappyBird {
                 this.gameOver = true;
             }
             
-            // Ensure at least one shot every few seconds
+            // Ensure consistent boss attack pattern
             const timeSinceLastShot = now - this.bossShootTimer.lastShot;
             const shouldForceShot = timeSinceLastShot > this.bossShootTimer.minInterval;
             
-            // Either force a shot after the interval or use random chance
+            // Fire projectiles based on timing or chance
             if (shouldForceShot || Math.random() < 0.003 * (1 + (this.currentLevel - 1) * 0.05)) {
                 const angle = Math.atan2(
                     this.bird.y - boss.y,
@@ -466,7 +465,7 @@ class FlappyBird {
                 this.bossShootTimer.lastShot = now;
             }
             
-            // Update projectiles
+            // Update projectile positions and collisions
             boss.projectiles.forEach(projectile => {
                 projectile.x += projectile.velocity.x;
                 projectile.y += projectile.velocity.y;
@@ -481,7 +480,7 @@ class FlappyBird {
                 }
             });
             
-            // Remove off-screen projectiles
+            // Clean up off-screen projectiles
             boss.projectiles = boss.projectiles.filter(projectile => 
                 projectile.x > -projectile.size && 
                 projectile.x < this.canvas.width + projectile.size &&
@@ -490,7 +489,7 @@ class FlappyBird {
             );
         });
         
-        // Check for level completion
+        // Handle level completion and transition effects
         if (this.score >= 10) {
             if (!this.levelComplete) {
                 this.levelComplete = true;
@@ -498,7 +497,7 @@ class FlappyBird {
                 cancelAnimationFrame(this.animationFrame);
             }
             
-            // Update flash effect
+            // Update level completion flash animation
             if (this.flashEffect.active) {
                 this.flashEffect.currentFrame++;
                 if (this.flashEffect.currentFrame >= this.flashEffect.duration) {
@@ -508,14 +507,14 @@ class FlappyBird {
         }
     }
     
-    // Add new method for level management with infinite progression
+    // Level initialization and difficulty scaling
     startLevel(levelNumber) {
         this.currentLevel = levelNumber;
         
-        // Increase game speed based on speedIncreasePerLevel
+        // Scale game speed with level progression
         this.currentSpeed = this.baseSpeed * (1 + (this.currentLevel - 1) * this.speedIncreasePerLevel);
         
-        // Reset game state for new level but keep total points
+        // Reset level-specific game state
         this.bird = {
             x: 50,
             y: 200,
@@ -526,20 +525,20 @@ class FlappyBird {
         };
         this.pipes = [];
         this.lastPipe = 0;
-        this.score = 0;  // Reset level score only
+        this.score = 0;  // Reset current level score
         this.gameStarted = true;
         this.gameOver = false;
         this.levelComplete = false;
         
-        // Clear existing bosses and reset boss appearance flag
+        // Reset boss state for new level
         this.bosses = [];
         this.bossHasAppeared = false;
         
-        // Reset flash effect
+        // Reset level transition effects
         this.flashEffect.active = false;
         this.flashEffect.currentFrame = 0;
         
-        // Start the game loop
+        // Initialize game loop
         cancelAnimationFrame(this.animationFrame);
         this.gameLoop();
     }
