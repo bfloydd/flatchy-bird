@@ -16,14 +16,23 @@ class FlappyBird {
         this.container.style.backgroundColor = '#2b1810'; // Very dark brown base
         
         // Create rich wood texture with multiple gradients
-        const woodColor1 = '#2b1810'; // Very dark brown
-        const woodColor2 = '#3c2415'; // Dark brown
-        const woodColor3 = '#5c3a21'; // Medium brown
+        const woodColor1 = '#3c2415'; // Slightly lighter dark brown
+        const woodColor2 = '#5c3a21'; // Slightly lighter medium brown
+        const woodColor3 = '#7a4a31'; // Slightly lighter medium brown
         
-        // Create frame effect with gradients
+        // Create frame effect with gradients and subtle wood grain
         this.container.style.background = `
             linear-gradient(${woodColor2}, ${woodColor1} 20%, ${woodColor2} 50%, ${woodColor1} 80%, ${woodColor2}),
-            linear-gradient(90deg, ${woodColor2}, ${woodColor1} 20%, ${woodColor2} 50%, ${woodColor1} 80%, ${woodColor2})`;
+            linear-gradient(90deg, ${woodColor2}, ${woodColor1} 20%, ${woodColor2} 50%, ${woodColor1} 80%, ${woodColor2}),
+            repeating-linear-gradient(
+                45deg,
+                rgba(255, 255, 255, 0.05) 0px,
+                rgba(255, 255, 255, 0.05) 2px,
+                transparent 2px,
+                transparent 4px
+            )`;
+        
+        this.container.style.backgroundBlendMode = 'overlay, overlay, normal';
         
         // Add inner shadow for depth
         this.container.style.boxShadow = `
