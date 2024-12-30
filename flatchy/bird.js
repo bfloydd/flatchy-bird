@@ -1,18 +1,16 @@
 class FlappyBird {
     constructor() {
-        // Define font style for consistent text rendering across the game
         this.gameFont = '"Chalkboard SE", cursive';
         
-        // Add bird sprite image and animation properties
+        // Load and setup bird sprite animation
         this.birdSprite = new Image();
         this.birdSprite.onload = () => {
             console.log('Sprite loaded:', this.birdSprite.width, 'x', this.birdSprite.height);
             this.spriteLoaded = true;
-            // Update frame dimensions based on actual sprite sheet
             this.spriteAnimation.frameWidth = this.birdSprite.width / this.spriteAnimation.framesPerRow;
-            this.spriteAnimation.frameHeight = this.birdSprite.height / 2; // 2 rows
+            this.spriteAnimation.frameHeight = this.birdSprite.height / 2;
             console.log('Frame size:', this.spriteAnimation.frameWidth, 'x', this.spriteAnimation.frameHeight);
-            if (!this.gameLoopStarted) {  // Only start if not already running
+            if (!this.gameLoopStarted) {
                 this.init();
             }
         };
@@ -21,7 +19,7 @@ class FlappyBird {
         };
         this.birdSprite.src = 'images/flatchy_flap_sprite.png';
 
-        // Add background image
+        // Load background assets
         this.backgroundImg = new Image();
         this.backgroundImg.onload = () => {
             this.backgroundLoaded = true;
@@ -29,16 +27,14 @@ class FlappyBird {
         this.backgroundImg.src = 'images/hills.png';
         this.backgroundLoaded = false;
 
-        // Add ground image
         this.groundImg = new Image();
         this.groundImg.onload = () => {
             this.groundLoaded = true;
         };
         this.groundImg.src = 'images/ground.png';
         this.groundLoaded = false;
-        this.groundOffset = 0;  // For scrolling effect
+        this.groundOffset = 0;
 
-        // Add tree image
         this.treeImg = new Image();
         this.treeImg.onload = () => {
             this.treeLoaded = true;
@@ -46,7 +42,7 @@ class FlappyBird {
         this.treeImg.src = 'images/tree.png';
         this.treeLoaded = false;
 
-        // Add feather images for trail effect
+        // Load feather trail effects
         this.feather1 = new Image();
         this.feather1.onload = () => {
             this.feather1Loaded = true;
@@ -68,7 +64,6 @@ class FlappyBird {
         this.feather3.src = 'images/feather_3.png';
         this.feather3Loaded = false;
 
-        // Add fourth feather
         this.feather4 = new Image();
         this.feather4.onload = () => {
             this.feather4Loaded = true;
@@ -78,20 +73,20 @@ class FlappyBird {
 
         this.spriteLoaded = false;
         this.spriteAnimation = {
-            frameWidth: 8,      // Will be dynamically updated when sprite loads
-            frameHeight: 8,     // Will be dynamically updated when sprite loads
-            totalFrames: 11,    // Using 11 frames to create smooth animation cycle
-            framesPerRow: 6,    // Sprite sheet organized as 2 rows with 6 frames each
+            frameWidth: 8,
+            frameHeight: 8,
+            totalFrames: 11,
+            framesPerRow: 6,
             currentFrame: 0,
             frameTimer: 0,
-            frameInterval: 100, // Milliseconds between frame updates
+            frameInterval: 100,
             lastFrameTime: 0
         };
         
-        // Game configuration for progressive difficulty
+        // Setup difficulty scaling
         this.startingLevel = 1;
-        this.speedIncreasePerLevel = 0.5;     // 50% speed increase per level
-        this.pillarSpaceIncreasePerLevel = .05; // 5% increase in pillar spacing per level
+        this.speedIncreasePerLevel = 0.5;
+        this.pillarSpaceIncreasePerLevel = .05;
         
         this.canvas = document.createElement('canvas');
         this.canvas.width = 800;
@@ -99,7 +94,7 @@ class FlappyBird {
         document.body.appendChild(this.canvas);
         this.ctx = this.canvas.getContext('2d');
         
-        // Bird physics and collision properties
+        // Setup bird physics
         this.bird = {
             x: 50,
             y: 200,
@@ -109,25 +104,23 @@ class FlappyBird {
             size: 48
         };
         
-        // Base movement speed affects pipes and game elements
+        // Setup game speed and obstacles
         this.baseSpeed = 1.8;
-        // Calculate initial speed based on starting level
         this.currentSpeed = this.baseSpeed * (1 + (this.startingLevel - 1) * this.speedIncreasePerLevel);
         
-        // Pipe generation and gameplay parameters
         this.pipes = [];
-        this.pipeWidth = 60;  // Width of tree obstacles
-        this.pipeGap = 150;   // Vertical space between pipes for bird passage
-        this.pipeInterval = 2000; // Time between pipe spawns in milliseconds
+        this.pipeWidth = 60;
+        this.pipeGap = 150;
+        this.pipeInterval = 2000;
         this.lastPipe = 0;
         
-        // Scoring system tracks both overall and per-level progress
-        this.score = 0;        // Total score across all levels
-        this.levelScore = 0;   // Score for current level only
+        // Setup scoring and game state
+        this.score = 0;
+        this.levelScore = 0;
         this.gameStarted = false;
         this.gameOver = false;
         
-        // UI element positioning
+        // Setup UI elements
         this.startButton = {
             x: this.canvas.width / 2 - 100,
             y: this.canvas.height / 2 + 30,
@@ -135,7 +128,6 @@ class FlappyBird {
             height: 50
         };
         
-        // Add restart button
         this.restartButton = {
             x: this.canvas.width / 2 - 100,
             y: this.canvas.height / 2 + 30,
@@ -143,7 +135,7 @@ class FlappyBird {
             height: 50
         };
         
-        // Fire effect configuration for visual ambiance
+        // Setup ambient effects
         this.fireBase = {
             flames: Array(20).fill().map((_, i) => ({
                 x: i * (this.canvas.width / 19),
@@ -152,10 +144,9 @@ class FlappyBird {
             }))
         };
         
-        // Track all active bosses
         this.bosses = [];
         
-        // Add victory state and continue button
+        // Setup level completion UI
         this.levelComplete = false;
         this.continueButton = {
             x: this.canvas.width / 2 - 150,
@@ -164,18 +155,17 @@ class FlappyBird {
             height: 60
         };
         
-        // Add flash effect properties
+        // Setup victory effects
         this.flashEffect = {
             active: false,
-            duration: 60,  // frames
+            duration: 60,
             currentFrame: 0,
             colors: ['#FF0000', '#00FF00', '#0000FF', '#FF00FF', '#FFFF00']
         };
         
-        // Add level tracking - initialize to starting level
         this.currentLevel = this.startingLevel;
         
-        // Add dungeon background properties
+        // Setup background effects
         this.background = {
             torches: Array(4).fill().map((_, i) => ({
                 x: i * (this.canvas.width / 3),
@@ -184,7 +174,7 @@ class FlappyBird {
             }))
         };
         
-        // Boss types with increasing difficulty and unique projectiles
+        // Setup boss types and behaviors
         this.bossTypes = {
             GHOST: {
                 emoji: '👻',
@@ -206,16 +196,15 @@ class FlappyBird {
             }
         };
         
-        // Track if boss has appeared for current level
         this.bossHasAppeared = false;
         
-        // Add boss shooting timer
+        // Setup boss attack timing
         this.bossShootTimer = {
             lastShot: 0,
-            minInterval: 3000  // Minimum 3 seconds between shots
+            minInterval: 3000
         };
         
-        // Add game over text image
+        // Load game assets
         this.gameOverImg = new Image();
         this.gameOverImg.onload = () => {
             this.gameOverImgLoaded = true;
@@ -223,7 +212,6 @@ class FlappyBird {
         this.gameOverImg.src = 'images/game_over_text.png';
         this.gameOverImgLoaded = false;
         
-        // Add start button image
         this.startBtnImg = new Image();
         this.startBtnImg.onload = () => {
             this.startBtnLoaded = true;
@@ -231,7 +219,6 @@ class FlappyBird {
         this.startBtnImg.src = 'images/start_btn_up.png';
         this.startBtnLoaded = false;
         
-        // Add plain button image for restart
         this.plainBtnImg = new Image();
         this.plainBtnImg.onload = () => {
             this.plainBtnLoaded = true;
@@ -239,7 +226,6 @@ class FlappyBird {
         this.plainBtnImg.src = 'images/plain_btn.png';
         this.plainBtnLoaded = false;
         
-        // Add title logo image
         this.titleLogoImg = new Image();
         this.titleLogoImg.onload = () => {
             this.titleLogoLoaded = true;
@@ -247,10 +233,10 @@ class FlappyBird {
         this.titleLogoImg.src = 'images/title_logo.png';
         this.titleLogoLoaded = false;
         
-        this.gameLoopStarted = false;  // Add flag to track if game loop is running
+        this.gameLoopStarted = false;
         this.bindEvents();
 
-        // Add cloud images
+        // Load cloud variations for background
         this.clouds = [];
         for (let i = 1; i <= 4; i++) {
             const cloud = new Image();
@@ -264,14 +250,13 @@ class FlappyBird {
     }
     
     init() {
-        // Don't initialize boss immediately
         this.bosses = [];
         this.bossHasAppeared = false;
         
-        // Ensure speed is set correctly for starting level
+        // Set initial game speed based on level
         this.currentSpeed = this.baseSpeed * (1 + (this.startingLevel - 1) * this.speedIncreasePerLevel);
         
-        if (!this.gameLoopStarted) {  // Only start if not already running
+        if (!this.gameLoopStarted) {
             this.gameLoopStarted = true;
             this.gameLoop();
         }
@@ -279,7 +264,7 @@ class FlappyBird {
     
     bindEvents() {
         const handleInput = () => {
-            if (!this.spriteLoaded) return; // Don't start if sprite isn't loaded
+            if (!this.spriteLoaded) return;
             if (!this.gameStarted) {
                 this.gameStarted = true;
             }
@@ -296,7 +281,6 @@ class FlappyBird {
                     clickX <= this.continueButton.x + this.continueButton.width &&
                     clickY >= this.continueButton.y && 
                     clickY <= this.continueButton.y + this.continueButton.height) {
-                    // Start next level with increased difficulty
                     this.startLevel(this.currentLevel + 1);
                 }
             } else if (this.gameOver) {
@@ -321,7 +305,6 @@ class FlappyBird {
         document.addEventListener('keydown', (e) => {
             if (e.code === 'Space') {
                 if (this.levelComplete) {
-                    // Start next level with increased difficulty
                     this.startLevel(this.currentLevel + 1);
                 } else if (this.gameOver) {
                     this.restart();
@@ -335,6 +318,7 @@ class FlappyBird {
     }
     
     restart() {
+        // Reset bird position and physics
         this.bird = {
             x: 50,
             y: 200,
@@ -345,8 +329,8 @@ class FlappyBird {
         };
         this.pipes = [];
         this.lastPipe = 0;
-        this.score = 0;        // Reset total score on full restart
-        this.levelScore = 0;   // Reset level score
+        this.score = 0;
+        this.levelScore = 0;
         this.gameStarted = false;
         this.gameOver = false;
         
@@ -355,57 +339,50 @@ class FlappyBird {
         
         this.levelComplete = false;
         
-        // Reset to starting level
         this.currentLevel = this.startingLevel;
-        
-        // Set speed based on the starting level
         this.currentSpeed = this.baseSpeed * (1 + (this.startingLevel - 1) * this.speedIncreasePerLevel);
         
         this.background.torches.forEach(torch => {
             torch.flameOffset = Math.random() * Math.PI;
         });
         
-        this.gameLoopStarted = true;  // Set flag when restarting
+        this.gameLoopStarted = true;
         this.gameLoop();
     }
     
     update() {
         if (!this.gameStarted || this.gameOver || this.levelComplete) return;
         
-        // Update sprite animation
+        // Update animation frames
         const currentTime = Date.now();
         if (currentTime - this.spriteAnimation.lastFrameTime > this.spriteAnimation.frameInterval) {
             this.spriteAnimation.currentFrame = (this.spriteAnimation.currentFrame + 1) % this.spriteAnimation.totalFrames;
             this.spriteAnimation.lastFrameTime = currentTime;
         }
 
-        // Update ground scroll position
+        // Scroll ground texture
         if (this.groundLoaded) {
             this.groundOffset -= this.currentSpeed;
-            // Reset ground position when it has scrolled one full width
             if (this.groundOffset <= -this.groundImg.width) {
                 this.groundOffset = 0;
             }
         }
 
+        // Apply gravity and update bird position
         this.bird.velocity += this.bird.gravity;
         this.bird.y += this.bird.velocity;
         
-        // Check for ground collision - adjust to match visual ground
-        if (this.bird.y + this.bird.size > this.canvas.height - 50) {  // Adjusted from -20 to -50 for ground height
-            this.bird.y = this.canvas.height - 50 - this.bird.size;  // Keep bird on ground
+        // Check ground collision
+        if (this.bird.y + this.bird.size > this.canvas.height - 50) {
+            this.bird.y = this.canvas.height - 50 - this.bird.size;
             this.gameOver = true;
         }
         
         const now = Date.now();
-        
-        // Calculate how many unscored pipes are currently in play
         const unscoredPipes = this.pipes.filter(pipe => !pipe.scored).length;
-        
-        // Adjust pipe interval based on current speed and spacing increase
         const adjustedPipeInterval = 2000 / (1 + (this.currentLevel - 1) * this.pillarSpaceIncreasePerLevel);
         
-        // Only generate new pipes if we need more to reach 10 points
+        // Generate new pipes until level completion
         if (now - this.lastPipe > adjustedPipeInterval && (unscoredPipes + this.levelScore) < 10) {
             const pipeY = Math.random() * (this.canvas.height - this.pipeGap - 100) + 50;
             this.pipes.push({
@@ -416,7 +393,7 @@ class FlappyBird {
             this.lastPipe = now;
         }
         
-        // Update pipes with current speed
+        // Update pipes and check collisions
         this.pipes.forEach(pipe => {
             pipe.x -= this.currentSpeed;
             
@@ -425,17 +402,16 @@ class FlappyBird {
             }
             
             if (!pipe.scored && pipe.x + this.pipeWidth < this.bird.x) {
-                this.score++;      // Increment total score
-                this.levelScore++; // Increment level score
+                this.score++;
+                this.levelScore++;
                 pipe.scored = true;
 
-                // Spawn boss when reaching 5 points in current level
+                // Spawn boss at halfway point
                 if (this.levelScore === 5 && !this.bossHasAppeared) {
                     const bossTypes = [this.bossTypes.GHOST, this.bossTypes.DEMON, this.bossTypes.SKULL];
                     const bossIndex = (this.currentLevel - 1) % bossTypes.length;
                     const bossType = bossTypes[bossIndex];
                     
-                    // Randomly choose entrance direction
                     const entrances = ['bottom', 'top', 'right'];
                     const entrance = entrances[Math.floor(Math.random() * entrances.length)];
                     
@@ -478,7 +454,7 @@ class FlappyBird {
             this.bird.y = Math.max(0, Math.min(this.bird.y, this.canvas.height - this.bird.size));
         }
         
-        // Update flame positions with current speed
+        // Update flame animations
         if (!this.gameOver && this.gameStarted) {
             this.fireBase.flames.forEach(flame => {
                 flame.x -= this.currentSpeed * 0.67;
@@ -490,9 +466,9 @@ class FlappyBird {
             });
         }
         
-        // Update bosses with increased difficulty per level
+        // Update boss behavior
         this.bosses.forEach(boss => {
-            // Handle entrance animation
+            // Animate boss entrance
             if (boss.entranceProgress < 1) {
                 boss.entranceProgress += 0.02;
                 const easing = 1 - Math.pow(1 - boss.entranceProgress, 3);
@@ -501,28 +477,25 @@ class FlappyBird {
                 return;
             }
 
-            // Scale boss speed with current level (reduced scaling)
             const bossSpeed = this.currentSpeed * (1 + (this.currentLevel - 1) * 0.03);
             
-            // Keep boss in the right half of the screen
+            // Keep boss on screen
             if (boss.x < this.canvas.width / 2) {
                 boss.x = this.canvas.width / 2;
             }
             
-            // Boss movement pattern (slower movement)
             boss.x -= bossSpeed * 0.2;
             if (boss.x < this.canvas.width / 2) boss.x = this.canvas.width - 50;
             
-            // More complex movement pattern based on level (reduced amplitude)
             const timeScale = 1 + (this.currentLevel - 1) * 0.05;
             
-            // Limit vertical movement to middle 60% of screen
+            // Restrict boss movement range
             const maxVerticalDistance = this.canvas.height * 0.3;
             const centerY = this.canvas.height / 2;
             const verticalOffset = Math.sin(Date.now() / 1000 * timeScale) * (30 + this.currentLevel * 2);
             boss.y = centerY + Math.max(-maxVerticalDistance, Math.min(maxVerticalDistance, verticalOffset));
             
-            // Check collision with boss
+            // Check boss collision
             const distance = Math.hypot(
                 boss.x - (this.bird.x + this.bird.size/2),
                 boss.y - (this.bird.y + this.bird.size/2)
@@ -531,11 +504,10 @@ class FlappyBird {
                 this.gameOver = true;
             }
             
-            // Ensure at least one shot every few seconds
             const timeSinceLastShot = now - this.bossShootTimer.lastShot;
             const shouldForceShot = timeSinceLastShot > this.bossShootTimer.minInterval;
             
-            // Either force a shot after the interval or use random chance
+            // Fire projectiles
             if (shouldForceShot || Math.random() < 0.003 * (1 + (this.currentLevel - 1) * 0.05)) {
                 const angle = Math.atan2(
                     this.bird.y - boss.y,
@@ -558,7 +530,7 @@ class FlappyBird {
                 this.bossShootTimer.lastShot = now;
             }
             
-            // Update projectiles
+            // Update and check projectile collisions
             boss.projectiles.forEach(projectile => {
                 projectile.x += projectile.velocity.x;
                 projectile.y += projectile.velocity.y;
@@ -573,7 +545,7 @@ class FlappyBird {
                 }
             });
             
-            // Remove off-screen projectiles
+            // Clean up off-screen projectiles
             boss.projectiles = boss.projectiles.filter(projectile => 
                 projectile.x > -projectile.size && 
                 projectile.x < this.canvas.width + projectile.size &&
@@ -582,7 +554,7 @@ class FlappyBird {
             );
         });
         
-        // Check for level completion using levelScore
+        // Handle level completion
         if (this.levelScore >= 10) {
             if (!this.levelComplete) {
                 this.levelComplete = true;
@@ -590,7 +562,6 @@ class FlappyBird {
                 cancelAnimationFrame(this.animationFrame);
             }
             
-            // Update flash effect
             if (this.flashEffect.active) {
                 this.flashEffect.currentFrame++;
                 if (this.flashEffect.currentFrame >= this.flashEffect.duration) {
@@ -600,16 +571,14 @@ class FlappyBird {
         }
     }
     
-    // Add new method for level management with infinite progression
     startLevel(levelNumber) {
         this.currentLevel = levelNumber;
-        this.levelScore = 0;   // Reset level score but keep total score
+        this.levelScore = 0;
         
-        // Update speed for new level - 50% increase per level
+        // Scale difficulty with level
         this.currentSpeed = this.baseSpeed * (1 + (levelNumber - 1) * this.speedIncreasePerLevel);
-        console.log(`Level ${levelNumber} speed: ${this.currentSpeed}`); // Debug log
         
-        // Reset game state for new level
+        // Reset game state
         this.bird = {
             x: 50,
             y: 200,
@@ -631,21 +600,20 @@ class FlappyBird {
         this.flashEffect.currentFrame = 0;
         
         cancelAnimationFrame(this.animationFrame);
-        this.gameLoopStarted = true;  // Set flag when starting new level
+        this.gameLoopStarted = true;
         this.gameLoop();
     }
     
     checkCollision(pipe) {
-        // Hitbox adjustments for precise collision detection
-        const hitboxPadding = 8;  // Padding to match visual tree trunk
-        const verticalPadding = 5; // Vertical padding for more forgiving collisions
+        // Fine-tune hitbox for better collision feel
+        const hitboxPadding = 8;
+        const verticalPadding = 5;
         
-        // Adjust bird hitbox to match the visible sprite
         const birdBox = {
-            left: this.bird.x + this.bird.size/3,     // Align with bird's body
-            right: this.bird.x + this.bird.size/1.2,  // Cover main body width
-            top: this.bird.y + this.bird.size/4,      // Account for head position
-            bottom: this.bird.y + this.bird.size/1.3   // Match body height
+            left: this.bird.x + this.bird.size/3,
+            right: this.bird.x + this.bird.size/1.2,
+            top: this.bird.y + this.bird.size/4,
+            bottom: this.bird.y + this.bird.size/1.3
         };
         
         const topPipeBox = {
@@ -662,17 +630,15 @@ class FlappyBird {
             bottom: this.canvas.height - verticalPadding
         };
 
-        // Debug visualization of hitboxes
+        // Draw hitboxes in debug mode
         if (this.gameStarted) {
             this.ctx.strokeStyle = 'rgba(255, 0, 0, 0.5)';
             this.ctx.lineWidth = 2;
             
-            // Draw bird hitbox
             this.ctx.strokeRect(birdBox.left, birdBox.top, 
                               birdBox.right - birdBox.left, 
                               birdBox.bottom - birdBox.top);
             
-            // Draw pipe hitboxes
             this.ctx.strokeRect(topPipeBox.left, topPipeBox.top,
                               topPipeBox.right - topPipeBox.left,
                               topPipeBox.bottom - topPipeBox.top);
@@ -694,16 +660,14 @@ class FlappyBird {
     }
     
     draw() {
-        // Don't draw anything if sprite isn't loaded
         if (!this.spriteLoaded) return;
         
-        // Clear the canvas
-        this.ctx.fillStyle = '#87CEEB';  // Sky blue fallback
+        // Paint sky background
+        this.ctx.fillStyle = '#87CEEB';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         
-        // Draw background image if loaded
+        // Draw background with proper scaling
         if (this.backgroundLoaded) {
-            // Draw the background image to fill the canvas while maintaining aspect ratio
             const scale = Math.max(
                 this.canvas.width / this.backgroundImg.width,
                 this.canvas.height / this.backgroundImg.height
@@ -716,11 +680,11 @@ class FlappyBird {
             this.ctx.drawImage(this.backgroundImg, x, y, width, height);
         }
 
-        // Draw trees before ground
+        // Draw trees before ground layer
         const groundHeight = 60;
         this.pipes.forEach(pipe => {
             if (this.treeLoaded) {
-                // Draw bottom tree first (it goes behind ground)
+                // Draw bottom tree
                 this.ctx.drawImage(
                     this.treeImg,
                     0, 0,
@@ -729,10 +693,10 @@ class FlappyBird {
                     this.pipeWidth, this.canvas.height - (pipe.y + this.pipeGap)
                 );
                 
-                // Draw top tree (upside down)
+                // Draw top tree (flipped)
                 this.ctx.save();
                 this.ctx.translate(pipe.x + this.pipeWidth/2, pipe.y);
-                this.ctx.scale(1, -1); // Flip vertically
+                this.ctx.scale(1, -1);
                 this.ctx.drawImage(
                     this.treeImg,
                     0, 0,
@@ -744,18 +708,16 @@ class FlappyBird {
             }
         });
 
-        // Draw scrolling ground on top of trees
+        // Draw scrolling ground
         if (this.groundLoaded) {
             const y = this.canvas.height - groundHeight;
             
-            // Draw first ground image
             this.ctx.drawImage(
                 this.groundImg,
                 this.groundOffset, y,
                 this.groundImg.width, groundHeight
             );
             
-            // Draw second ground image for seamless scrolling
             this.ctx.drawImage(
                 this.groundImg,
                 this.groundOffset + this.groundImg.width, y,
@@ -763,25 +725,22 @@ class FlappyBird {
             );
         }
         
-        // Only draw the bird and trail if game has started
         if (this.gameStarted) {
             this.ctx.save();
             
-            // Calculate rotation based on velocity (reduced rotation amount)
+            // Tilt bird based on velocity
             let rotation = 0;
             if (this.bird.velocity < 0) {
-                rotation = -0.2;  // Reduced from -0.3
+                rotation = -0.2;
             } else if (this.bird.velocity > 0) {
-                rotation = 0.2;   // Reduced from 0.3
+                rotation = 0.2;
             }
             
-            // Draw trail behind bird
+            // Draw feather trail
             this.ctx.save();
             this.ctx.translate(this.bird.x + this.bird.size/2, this.bird.y + this.bird.size/2);
             this.ctx.rotate(rotation);
             
-            // Draw three feathers in a trail with decreasing sizes and opacity
-            // Largest feather nearest to bird
             if (this.feather1Loaded) {
                 this.ctx.globalAlpha = 0.8;
                 this.ctx.drawImage(
@@ -791,7 +750,6 @@ class FlappyBird {
                 );
             }
             
-            // Medium feather in middle
             if (this.feather2Loaded) {
                 this.ctx.globalAlpha = 0.6;
                 this.ctx.drawImage(
@@ -801,7 +759,6 @@ class FlappyBird {
                 );
             }
             
-            // Smaller feather
             if (this.feather3Loaded) {
                 this.ctx.globalAlpha = 0.4;
                 this.ctx.drawImage(
@@ -811,7 +768,6 @@ class FlappyBird {
                 );
             }
 
-            // Smallest feather farthest from bird
             if (this.feather4Loaded) {
                 this.ctx.globalAlpha = 0.2;
                 this.ctx.drawImage(
@@ -821,9 +777,7 @@ class FlappyBird {
                 );
             }
             
-            // Reset opacity
             this.ctx.globalAlpha = 1.0;
-            
             this.ctx.restore();
             
             // Draw bird sprite
@@ -831,27 +785,26 @@ class FlappyBird {
             this.ctx.translate(this.bird.x + this.bird.size/2, this.bird.y + this.bird.size/2);
             this.ctx.rotate(rotation);
             
-            // Calculate sprite sheet position for current animation frame
+            // Select sprite frame
             let column, row;
             if (this.gameOver) {
-                column = 5;  // Last column for death animation
-                row = 1;    // Bottom row contains death frame
+                column = 5;
+                row = 1;
             } else {
                 column = this.spriteAnimation.currentFrame % this.spriteAnimation.framesPerRow;
                 row = Math.floor(this.spriteAnimation.currentFrame / this.spriteAnimation.framesPerRow);
             }
             
-            // Draw the bird with proper scaling
             this.ctx.drawImage(
                 this.birdSprite,
-                column * this.spriteAnimation.frameWidth,    // Source X
-                row * this.spriteAnimation.frameHeight,      // Source Y
-                this.spriteAnimation.frameWidth,             // Source width
-                this.spriteAnimation.frameHeight,            // Source height
-                -this.bird.size/2,                          // Destination X
-                -this.bird.size/2,                          // Destination Y
-                this.bird.size,                             // Destination width
-                this.bird.size                              // Destination height
+                column * this.spriteAnimation.frameWidth,
+                row * this.spriteAnimation.frameHeight,
+                this.spriteAnimation.frameWidth,
+                this.spriteAnimation.frameHeight,
+                -this.bird.size/2,
+                -this.bird.size/2,
+                this.bird.size,
+                this.bird.size
             );
             
             this.ctx.restore();
@@ -859,7 +812,7 @@ class FlappyBird {
         }
         
         if (this.gameStarted && !this.gameOver) {
-            // Draw level counter in top right
+            // Draw HUD
             this.ctx.fillStyle = '#fff';
             this.ctx.font = `bold 24px ${this.gameFont}`;
             this.ctx.textAlign = 'right';
@@ -868,32 +821,31 @@ class FlappyBird {
             this.ctx.strokeText(`Level ${this.currentLevel}`, this.canvas.width - 20, 40);
             this.ctx.fillText(`Level ${this.currentLevel}`, this.canvas.width - 20, 40);
 
-            // Draw score in top left
             this.ctx.textAlign = 'left';
             this.ctx.strokeText(`Score: ${this.score}`, 20, 40);
             this.ctx.fillText(`Score: ${this.score}`, 20, 40);
         }
         
         if (this.gameOver) {
+            // Draw game over overlay
             this.ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
             this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
             
-            // Draw game over image
             if (this.gameOverImgLoaded) {
-                const imgWidth = 300;  // Base width
+                const imgWidth = 300;
                 const aspectRatio = this.gameOverImg.height / this.gameOverImg.width;
-                const imgHeight = imgWidth * aspectRatio;  // Calculate height based on aspect ratio
+                const imgHeight = imgWidth * aspectRatio;
                 
                 this.ctx.drawImage(
                     this.gameOverImg,
                     (this.canvas.width - imgWidth) / 2,
-                    this.canvas.height / 3 - 30,  // Adjusted position
+                    this.canvas.height / 3 - 30,
                     imgWidth,
                     imgHeight
                 );
             }
             
-            // Score text with matching style
+            // Draw final score
             this.ctx.fillStyle = '#FFFFFF';
             this.ctx.strokeStyle = '#000000';
             this.ctx.lineWidth = 3;
@@ -902,19 +854,17 @@ class FlappyBird {
             this.ctx.strokeText(`Score: ${this.score}`, this.canvas.width / 2, this.canvas.height / 3 + 60);
             this.ctx.fillText(`Score: ${this.score}`, this.canvas.width / 2, this.canvas.height / 3 + 60);
             
-            // Draw restart button using plain button image
+            // Draw restart button
             if (this.plainBtnLoaded) {
-                const btnWidth = 200;  // Match current button width
+                const btnWidth = 200;
                 const aspectRatio = this.plainBtnImg.height / this.plainBtnImg.width;
                 const btnHeight = btnWidth * aspectRatio;
                 
-                // Update button hitbox to match image
                 this.restartButton.width = btnWidth;
                 this.restartButton.height = btnHeight;
                 this.restartButton.x = (this.canvas.width - btnWidth) / 2;
-                this.restartButton.y = this.canvas.height / 2 + 30;  // Changed from +20 to +30
+                this.restartButton.y = this.canvas.height / 2 + 30;
                 
-                // Draw the button image
                 this.ctx.drawImage(
                     this.plainBtnImg,
                     this.restartButton.x,
@@ -923,49 +873,46 @@ class FlappyBird {
                     btnHeight
                 );
 
-                // Add centered text on the button
-                this.ctx.fillStyle = '#000000';  // Black text
+                this.ctx.fillStyle = '#000000';
                 this.ctx.font = `bold 24px ${this.gameFont}`;
                 this.ctx.textAlign = 'center';
                 this.ctx.textBaseline = 'middle';
                 this.ctx.fillText(
                     'Try again',
                     this.restartButton.x + (btnWidth/2),
-                    this.restartButton.y + (btnHeight/2) + 2  // Move down by adding 2 pixels instead of subtracting
+                    this.restartButton.y + (btnHeight/2) + 2
                 );
             }
         }
         
         if (!this.gameStarted) {
+            // Draw title screen
             this.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
             this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
             
-            // Draw title logo
             if (this.titleLogoLoaded) {
-                const logoWidth = 400;  // Base width for the logo
+                const logoWidth = 400;
                 const aspectRatio = this.titleLogoImg.height / this.titleLogoImg.width;
                 const logoHeight = logoWidth * aspectRatio;
                 
                 this.ctx.drawImage(
                     this.titleLogoImg,
                     (this.canvas.width - logoWidth) / 2,
-                    this.canvas.height / 3 - 60,  // Position it slightly higher than the old text
+                    this.canvas.height / 3 - 60,
                     logoWidth,
                     logoHeight
                 );
             }
             
-            // Draw start button image
             if (this.startBtnLoaded) {
-                const btnWidth = 200;  // Match current button width
+                const btnWidth = 200;
                 const aspectRatio = this.startBtnImg.height / this.startBtnImg.width;
                 const btnHeight = btnWidth * aspectRatio;
                 
-                // Update button hitbox to match image
                 this.startButton.width = btnWidth;
                 this.startButton.height = btnHeight;
                 this.startButton.x = (this.canvas.width - btnWidth) / 2;
-                this.startButton.y = this.canvas.height / 2 + 30;  // Changed from +20 to +30
+                this.startButton.y = this.canvas.height / 2 + 30;
                 
                 this.ctx.drawImage(
                     this.startBtnImg,
@@ -977,37 +924,33 @@ class FlappyBird {
             }
         }
         
-        // Draw all bosses and their projectiles
+        // Draw bosses and projectiles
         this.bosses.forEach(boss => {
-            // Draw boss
             this.ctx.font = `${boss.type.size}px ${this.gameFont}`;
             this.ctx.textAlign = 'center';
             this.ctx.textBaseline = 'middle';
             this.ctx.fillText(boss.type.emoji, boss.x, boss.y);
             
-            // Draw projectiles
             boss.projectiles.forEach(projectile => {
                 this.ctx.font = `${projectile.size}px ${this.gameFont}`;
                 this.ctx.fillText(projectile.emoji, projectile.x, projectile.y);
             });
         });
         
-        // Update level complete screen with new styling
+        // Draw level complete screen
         if (this.levelComplete) {
             this.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
             this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
             
-            // Draw clouds first
+            // Add floating clouds
             this.clouds.forEach((cloud, index) => {
                 if (cloud.loaded) {
-                    // Calculate cloud dimensions
-                    const cloudWidth = 150;  // Reduced from 200 to 150
+                    const cloudWidth = 150;
                     const aspectRatio = cloud.height / cloud.width || 1;
                     const cloudHeight = cloudWidth * aspectRatio;
                     
-                    // Position clouds across the top of the screen
                     const x = (index * (this.canvas.width / 3)) - 50;
-                    const y = 20 + (index % 2) * 40;  // Alternate heights
+                    const y = 20 + (index % 2) * 40;
                     
                     this.ctx.drawImage(
                         cloud,
@@ -1019,7 +962,7 @@ class FlappyBird {
                 }
             });
             
-            // Level text
+            // Show level completion message
             this.ctx.fillStyle = '#FFFFFF';
             this.ctx.strokeStyle = '#000000';
             this.ctx.lineWidth = 3;
@@ -1028,24 +971,21 @@ class FlappyBird {
             this.ctx.strokeText(`LEVEL ${this.currentLevel}`, this.canvas.width / 2, this.canvas.height / 3 - 40);
             this.ctx.fillText(`LEVEL ${this.currentLevel}`, this.canvas.width / 2, this.canvas.height / 3 - 40);
             
-            // Complete text
             this.ctx.font = `bold 48px ${this.gameFont}`;
             this.ctx.strokeText('COMPLETE!', this.canvas.width / 2, this.canvas.height / 3 + 20);
             this.ctx.fillText('COMPLETE!', this.canvas.width / 2, this.canvas.height / 3 + 20);
             
-            // Draw continue button with plain button image
+            // Add continue button
             if (this.plainBtnLoaded) {
                 const btnWidth = 200;
                 const aspectRatio = this.plainBtnImg.height / this.plainBtnImg.width;
                 const btnHeight = btnWidth * aspectRatio;
                 
-                // Update button hitbox
                 this.continueButton.width = btnWidth;
                 this.continueButton.height = btnHeight;
                 this.continueButton.x = (this.canvas.width - btnWidth) / 2;
                 this.continueButton.y = this.canvas.height / 2 + 30;
                 
-                // Draw the button
                 this.ctx.drawImage(
                     this.plainBtnImg,
                     this.continueButton.x,
@@ -1054,7 +994,6 @@ class FlappyBird {
                     btnHeight
                 );
 
-                // Add centered text on the button
                 this.ctx.fillStyle = '#000000';
                 this.ctx.font = `bold 24px ${this.gameFont}`;
                 this.ctx.textAlign = 'center';
@@ -1068,6 +1007,7 @@ class FlappyBird {
         }
     }
     
+    // Main game loop
     gameLoop() {
         this.update();
         this.draw();
@@ -1076,32 +1016,32 @@ class FlappyBird {
         }
     }
     
-    // Add helper method for drawing dungeon-style buttons
+    // Create a themed button with stone texture and glow effects
     drawDungeonButton(x, y, width, height, text) {
         this.ctx.save();
         
-        // Add glow effect
+        // Add orange glow
         this.ctx.shadowColor = '#ff4400';
         this.ctx.shadowBlur = 20;
         
-        // Draw stone button background
-        this.ctx.fillStyle = '#2C2F33';  // Dark slate color
+        // Create stone texture
+        this.ctx.fillStyle = '#2C2F33';
         this.ctx.fillRect(x, y, width, height);
         
-        // Add stone texture
-        this.ctx.fillStyle = '#23272A';  // Darker shade for depth
+        // Add vertical lines for depth
+        this.ctx.fillStyle = '#23272A';
         for (let i = 0; i < width; i += 20) {
             this.ctx.fillRect(x + i, y, 2, height);
         }
         
-        // Add metallic border
+        // Add raised border
         this.ctx.fillStyle = '#4A4D50';
         this.ctx.fillRect(x - 2, y - 2, width + 4, 4);
         this.ctx.fillRect(x - 2, y + height - 2, width + 4, 4);
         this.ctx.fillRect(x - 2, y, 4, height);
         this.ctx.fillRect(x + width - 2, y, 4, height);
         
-        // Draw text with glow
+        // Add glowing text
         this.ctx.fillStyle = '#fff';
         this.ctx.font = `bold 24px ${this.gameFont}`;
         this.ctx.textAlign = 'center';
